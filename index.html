@@ -1,59 +1,151 @@
-
-
 <!DOCTYPE html>
-<html>
-
+<html lang="es">
 <head>
-
-  <!-- METADATOS -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- LIBRERÍAS -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <title>4 Escenarios · Apps reales como ejemplo</title>
   <style>
-    
-  .wrap { padding: 1rem 0; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-  .tab { padding: 6px 16px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
-  .tab.active-gray { background: #D3D1C7; color: #2C2C2A; border-color: #D3D1C7; }
-  .tab.active-teal { background: #9FE1CB; color: #04342C; border-color: #9FE1CB; }
-  .tab.active-blue { background: #B5D4F4; color: #042C53; border-color: #B5D4F4; }
-  .tab.active-amber { background: #FAC775; color: #412402; border-color: #FAC775; }
-  .top-card { border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1.25rem; margin-bottom: 14px; background: var(--color-background-primary); }
-  .scenario-label { font-size: 11px; padding: 3px 10px; border-radius: var(--border-radius-md); display: inline-block; margin-bottom: 10px; }
-  .app-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
-  .app-row:last-child { border-bottom: none; }
-  .app-logo { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500; flex-shrink: 0; }
-  .app-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
-  .app-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; margin: 0 0 4px; }
-  .app-why { font-size: 12px; line-height: 1.5; margin: 0; }
-  .app-stats { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
-  .stat-pill { font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); }
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 14px 0; }
-  .mcard { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
-  .mcard-label { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 3px; }
-  .mcard-val { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
-  .mcard-sub { font-size: 10px; color: var(--color-text-secondary); margin-top: 1px; }
-  .chart-wrap { position: relative; width: 100%; height: 200px; margin-top: 14px; }
-  .timeline { margin-top: 20px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 14px; }
-  .trow { display: flex; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
-  .trow:last-child { border-bottom: none; }
-  .tyear { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); min-width: 40px; }
-  .tusers { font-size: 12px; font-weight: 500; color: var(--color-text-primary); min-width: 80px; }
-  .tmrr { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
-  .tarr { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
-  .thito { font-size: 11px; color: var(--color-text-secondary); margin-left: auto; text-align: right; }
-  .thead { display: flex; gap: 10px; padding: 0 0 5px; }
-  .th { font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
-  .lesson-box { border-left: 2px solid; padding: 10px 14px; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; background: var(--color-background-secondary); margin-top: 14px; }
-  .lesson-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-  .lesson-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
-</style>
+    :root {
+      --color-background-primary: #FFFFFF;
+      --color-background-secondary: #F5F4F0;
+      --color-text-primary: #1A1A18;
+      --color-text-secondary: #6B6A65;
+      --color-border-tertiary: #E4E3DC;
+      --color-border-secondary: #D0CFC8;
+      --border-radius-lg: 12px;
+      --border-radius-md: 8px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-background-primary: #1C1C1A;
+        --color-background-secondary: #252522;
+        --color-text-primary: #F0EFE8;
+        --color-text-secondary: #9A9990;
+        --color-border-tertiary: #2E2E2B;
+        --color-border-secondary: #3A3A36;
+      }
+    }
 
-<div class="wrap">
-  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden">4 escenarios con apps reales como ejemplo</h2>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--color-background-secondary);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .page { max-width: 720px; margin: 0 auto; }
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── tabs ── */
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab {
+      padding: 6px 16px;
+      border-radius: var(--border-radius-md);
+      border: 0.5px solid var(--color-border-secondary);
+      background: transparent;
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .tab.active-gray  { background: #D3D1C7; color: #2C2C2A; border-color: #D3D1C7; }
+    .tab.active-teal  { background: #9FE1CB; color: #04342C; border-color: #9FE1CB; }
+    .tab.active-blue  { background: #B5D4F4; color: #042C53; border-color: #B5D4F4; }
+    .tab.active-amber { background: #FAC775; color: #412402; border-color: #FAC775; }
+
+    /* ── card ── */
+    .top-card {
+      border-radius: var(--border-radius-lg);
+      border: 0.5px solid var(--color-border-tertiary);
+      padding: 1.25rem;
+      margin-bottom: 14px;
+      background: var(--color-background-primary);
+    }
+    .scenario-label {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: var(--border-radius-md);
+      display: inline-block;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    /* ── app rows ── */
+    .app-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 0.5px solid var(--color-border-tertiary);
+    }
+    .app-row:last-of-type { border-bottom: none; }
+    .app-logo {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600;
+      flex-shrink: 0;
+    }
+    .app-name  { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+    .app-desc  { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; margin: 0 0 4px; }
+    .app-why   { font-size: 12px; line-height: 1.5; margin: 0; }
+    .app-stats { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+    .stat-pill {
+      font-size: 11px; padding: 2px 8px;
+      border-radius: var(--border-radius-md);
+      background: var(--color-background-secondary);
+      color: var(--color-text-secondary);
+    }
+
+    /* ── lesson box ── */
+    .lesson-box {
+      border-left: 2px solid;
+      padding: 10px 14px;
+      border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+      background: var(--color-background-secondary);
+      margin-top: 14px;
+    }
+    .lesson-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; font-weight: 600; }
+    .lesson-text  { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+
+    /* ── metrics ── */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px; margin: 14px 0;
+    }
+    .mcard { background: var(--color-background-primary); border-radius: var(--border-radius-md); padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); }
+    .mcard-label { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 3px; }
+    .mcard-val   { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
+    .mcard-sub   { font-size: 10px; color: var(--color-text-secondary); margin-top: 1px; }
+
+    /* ── chart ── */
+    .chart-wrap { position: relative; width: 100%; height: 200px; margin-top: 14px; }
+
+    /* ── timeline ── */
+    .timeline { margin-top: 20px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 14px; }
+    .thead { display: flex; gap: 10px; padding: 0 0 5px; }
+    .th { font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+    .trow { display: flex; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
+    .trow:last-child { border-bottom: none; }
+    .trow.key { background: var(--color-background-secondary); border-radius: 6px; padding: 7px 6px; }
+    .tyear { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); min-width: 40px; }
+    .tusers{ font-size: 12px; font-weight: 500; color: var(--color-text-primary); min-width: 80px; }
+    .tmrr  { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
+    .tarr  { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
+    .thito { font-size: 11px; color: var(--color-text-secondary); margin-left: auto; text-align: right; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <h1>4 escenarios con apps reales como ejemplo</h1>
 
   <div class="tabs">
     <button class="tab" onclick="set(0)" id="tab0">Idea mediocre</button>
@@ -74,8 +166,7 @@ const tickColor = '#888780';
 const scenarios = [
   {
     tabClass: 'active-gray',
-    color: '#888780',
-    colorLight: 'rgba(136,135,128,0.08)',
+    color: '#888780', colorLight: 'rgba(136,135,128,0.08)',
     tagBg: '#D3D1C7', tagColor: '#2C2C2A',
     borderColor: '#888780',
     label: 'Escenario 1 · Idea mediocre',
@@ -108,8 +199,7 @@ const scenarios = [
   },
   {
     tabClass: 'active-teal',
-    color: '#1D9E75',
-    colorLight: 'rgba(29,158,117,0.1)',
+    color: '#1D9E75', colorLight: 'rgba(29,158,117,0.1)',
     tagBg: '#9FE1CB', tagColor: '#04342C',
     borderColor: '#1D9E75',
     label: 'Escenario 2 · Buena idea',
@@ -142,8 +232,7 @@ const scenarios = [
   },
   {
     tabClass: 'active-blue',
-    color: '#378ADD',
-    colorLight: 'rgba(55,138,221,0.1)',
+    color: '#378ADD', colorLight: 'rgba(55,138,221,0.1)',
     tagBg: '#B5D4F4', tagColor: '#042C53',
     borderColor: '#378ADD',
     label: 'Escenario 3 · Gran idea global',
@@ -176,8 +265,7 @@ const scenarios = [
   },
   {
     tabClass: 'active-amber',
-    color: '#BA7517',
-    colorLight: 'rgba(186,117,23,0.1)',
+    color: '#BA7517', colorLight: 'rgba(186,117,23,0.1)',
     tagBg: '#FAC775', tagColor: '#412402',
     borderColor: '#BA7517',
     label: 'Escenario 4 · Excepcional',
@@ -227,9 +315,8 @@ function fmtEur(n) {
 function set(idx) {
   current = idx;
   const s = scenarios[idx];
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    t.className = 'tab';
-    if (i === idx) t.className = 'tab '+s.tabClass;
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.className = 'tab' + (i === idx ? ' ' + s.tabClass : '');
   });
   render();
 }
@@ -237,29 +324,44 @@ function set(idx) {
 function render() {
   const s = scenarios[current];
   const u10 = s.users[10];
-  const mrr10 = Math.round(u10*9.99);
-  const arr10 = mrr10*12;
+  const mrr10 = Math.round(u10 * 9.99);
+  const arr10 = mrr10 * 12;
   const u5 = s.users[5];
-  const mrr5 = Math.round(u5*9.99);
+  const mrr5 = Math.round(u5 * 9.99);
   const labels = ['Año 0','Año 1','Año 2','Año 3','Año 4','Año 5','Año 6','Año 7','Año 8','Año 9','Año 10'];
 
   const appsHtml = s.apps.map(a => `
     <div class="app-row">
       <div class="app-logo" style="background:${a.bg};color:${a.textColor}">${a.initials}</div>
       <div style="flex:1;min-width:0">
-        <div class="app-name">${a.name}</div>
-        <div class="app-desc">${a.desc}</div>
-        <div class="app-why" style="color:${s.color}">${a.why}</div>
-        <div class="app-stats">${a.stats.map(st=>`<span class="stat-pill">${st}</span>`).join('')}</div>
+        <p class="app-name">${a.name}</p>
+        <p class="app-desc">${a.desc}</p>
+        <p class="app-why" style="color:${s.color}">${a.why}</p>
+        <div class="app-stats">${a.stats.map(st => `<span class="stat-pill">${st}</span>`).join('')}</div>
       </div>
     </div>
   `).join('');
 
-  let timelineHtml = `<div class="thead"><div class="th" style="min-width:40px">Año</div><div class="th" style="min-width:80px">Usuarios</div><div class="th" style="min-width:80px">MRR</div><div class="th" style="min-width:80px">ARR</div><div class="th">Hito</div></div>`;
-  for (let i=1;i<=10;i++) {
-    const u=s.users[i], mrr=Math.round(u*9.99), arr=mrr*12;
-    const isKey=[2,5,10].includes(i);
-    timelineHtml+=`<div class="trow" style="${isKey?'background:var(--color-background-secondary);border-radius:6px;padding:7px 6px;':''}"><div class="tyear">Año ${i}</div><div class="tusers">${fmt(u)}</div><div class="tmrr">${fmtEur(mrr)}/mes</div><div class="tarr">${fmtEur(arr)}/año</div><div class="thito">${s.milestones[i]}</div></div>`;
+  let timelineHtml = `
+    <div class="thead">
+      <span class="th" style="min-width:40px">Año</span>
+      <span class="th" style="min-width:80px">Usuarios</span>
+      <span class="th" style="min-width:80px">MRR</span>
+      <span class="th" style="min-width:80px">ARR</span>
+      <span class="th" style="margin-left:auto">Hito</span>
+    </div>`;
+
+  for (let i = 1; i <= 10; i++) {
+    const u = s.users[i], mrr = Math.round(u * 9.99), arr = mrr * 12;
+    const isKey = [2, 5, 10].includes(i);
+    timelineHtml += `
+      <div class="trow${isKey ? ' key' : ''}">
+        <span class="tyear">Año ${i}</span>
+        <span class="tusers">${fmt(u)}</span>
+        <span class="tmrr">${fmtEur(mrr)}/mes</span>
+        <span class="tarr">${fmtEur(arr)}/año</span>
+        <span class="thito">${s.milestones[i]}</span>
+      </div>`;
   }
 
   document.getElementById('content').innerHTML = `
@@ -279,7 +381,9 @@ function render() {
       <div class="mcard"><div class="mcard-label">MRR año 5</div><div class="mcard-val">${fmtEur(mrr5)}</div><div class="mcard-sub">punto intermedio</div></div>
     </div>
 
-    <div class="chart-wrap"><canvas id="mainChart" role="img" aria-label="Proyección usuarios 10 años escenario ${s.label}"></canvas></div>
+    <div class="chart-wrap">
+      <canvas id="mainChart" role="img" aria-label="Proyección usuarios 10 años · ${s.label}"></canvas>
+    </div>
     <div class="timeline">${timelineHtml}</div>
   `;
 
@@ -305,7 +409,11 @@ function render() {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ` ${fmt(ctx.parsed.y)} usuarios · MRR ${fmtEur(Math.round(ctx.parsed.y*9.99))}` } }
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${fmt(ctx.parsed.y)} usuarios · MRR ${fmtEur(Math.round(ctx.parsed.y * 9.99))}`
+          }
+        }
       },
       scales: {
         x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
@@ -317,6 +425,5 @@ function render() {
 
 set(1);
 </script>
-</head>
 </body>
 </html>
