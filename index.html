@@ -1,0 +1,305 @@
+
+<style>
+  .wrap { padding: 1rem 0; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab { padding: 6px 16px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+  .tab.active-gray { background: #D3D1C7; color: #2C2C2A; border-color: #D3D1C7; }
+  .tab.active-teal { background: #9FE1CB; color: #04342C; border-color: #9FE1CB; }
+  .tab.active-blue { background: #B5D4F4; color: #042C53; border-color: #B5D4F4; }
+  .tab.active-amber { background: #FAC775; color: #412402; border-color: #FAC775; }
+  .top-card { border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1.25rem; margin-bottom: 14px; background: var(--color-background-primary); }
+  .scenario-label { font-size: 11px; padding: 3px 10px; border-radius: var(--border-radius-md); display: inline-block; margin-bottom: 10px; }
+  .app-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .app-row:last-child { border-bottom: none; }
+  .app-logo { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500; flex-shrink: 0; }
+  .app-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+  .app-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; margin: 0 0 4px; }
+  .app-why { font-size: 12px; line-height: 1.5; margin: 0; }
+  .app-stats { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+  .stat-pill { font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 14px 0; }
+  .mcard { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
+  .mcard-label { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 3px; }
+  .mcard-val { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
+  .mcard-sub { font-size: 10px; color: var(--color-text-secondary); margin-top: 1px; }
+  .chart-wrap { position: relative; width: 100%; height: 200px; margin-top: 14px; }
+  .timeline { margin-top: 20px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 14px; }
+  .trow { display: flex; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
+  .trow:last-child { border-bottom: none; }
+  .tyear { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); min-width: 40px; }
+  .tusers { font-size: 12px; font-weight: 500; color: var(--color-text-primary); min-width: 80px; }
+  .tmrr { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
+  .tarr { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
+  .thito { font-size: 11px; color: var(--color-text-secondary); margin-left: auto; text-align: right; }
+  .thead { display: flex; gap: 10px; padding: 0 0 5px; }
+  .th { font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+  .lesson-box { border-left: 2px solid; padding: 10px 14px; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; background: var(--color-background-secondary); margin-top: 14px; }
+  .lesson-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .lesson-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+</style>
+
+<div class="wrap">
+  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden">4 escenarios con apps reales como ejemplo</h2>
+
+  <div class="tabs">
+    <button class="tab" onclick="set(0)" id="tab0">Idea mediocre</button>
+    <button class="tab" onclick="set(1)" id="tab1">Buena idea</button>
+    <button class="tab" onclick="set(2)" id="tab2">Gran idea global</button>
+    <button class="tab" onclick="set(3)" id="tab3">Excepcional</button>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+const tickColor = '#888780';
+
+const scenarios = [
+  {
+    tabClass: 'active-gray',
+    color: '#888780',
+    colorLight: 'rgba(136,135,128,0.08)',
+    tagBg: '#D3D1C7', tagColor: '#2C2C2A',
+    borderColor: '#888780',
+    label: 'Escenario 1 · Idea mediocre',
+    apps: [
+      {
+        initials: 'WL', bg: '#D3D1C7', textColor: '#2C2C2A',
+        name: 'Wunderlist',
+        desc: 'App de listas de tareas con buen diseño. Creada en 2011, creció bien pero nunca encontró un diferencial claro frente a Things, OmniFocus o Remember the Milk.',
+        why: 'Microsoft la compró en 2015 por ~$100M y la cerró en 2020. Sin diferencial real, acabó absorbida.',
+        stats: ['Vendida ~$100M', 'Cerrada en 2020', 'Sin modelo sostenible']
+      },
+      {
+        initials: 'Any', bg: '#B4B2A9', textColor: '#2C2C2A',
+        name: 'Any.do',
+        desc: 'Otra app de tareas y listas con diseño minimalista. Lleva desde 2011 y sigue existiendo, pero nunca despegó como categoría propia.',
+        why: 'Sobrevive pero no domina. Con millones de descargas gratuitas y conversión a pago muy baja. El problema: no hay urgencia en cambiar de app de notas.',
+        stats: ['~5M usuarios', 'Conversión pago ~2%', 'Mercado saturado']
+      },
+      {
+        initials: 'SC', bg: '#888780', textColor: '#F1EFE8',
+        name: 'Sunrise Calendar',
+        desc: 'Calendario bonito con integración de apps. Diseño excelente, pero solucionaba algo que Google Calendar ya hacía gratis.',
+        why: 'Microsoft la compró en 2015 y la cerró al año siguiente. Un diseño bonito no es un diferencial sostenible.',
+        stats: ['Comprada por Microsoft', 'Cerrada en 2016', 'Sin ventaja real']
+      }
+    ],
+    lesson: 'El patrón de la idea mediocre: buen diseño, buena ejecución, pero el problema ya estaba resuelto por otros de forma suficientemente buena. El usuario no tiene urgencia en pagar.',
+    users: [0,120,400,700,900,1100,1300,1500,1700,1900,2200],
+    milestones: ['','Primeros usuarios','Crecimiento lento','Churn alto','Estancado','Rivales te superan','Pivotar o morir','Nicho pequeño','Sobreviviendo','Sin crecimiento','Empresa pequeña']
+  },
+  {
+    tabClass: 'active-teal',
+    color: '#1D9E75',
+    colorLight: 'rgba(29,158,117,0.1)',
+    tagBg: '#9FE1CB', tagColor: '#04342C',
+    borderColor: '#1D9E75',
+    label: 'Escenario 2 · Buena idea',
+    apps: [
+      {
+        initials: 'TG', bg: '#9FE1CB', textColor: '#04342C',
+        name: 'Toggl',
+        desc: 'Control de tiempo para freelancers y equipos. Resuelve un dolor concreto: saber en qué gastas tu tiempo para facturar mejor o ser más productivo.',
+        why: 'Problema real, usuario claro. Bootstrapped durante años, rentable, más de 5M de usuarios. No es viral pero la gente que lo necesita no lo deja.',
+        stats: ['+5M usuarios', 'Bootstrapped', 'Rentable y sólido']
+      },
+      {
+        initials: 'CL', bg: '#5DCAA5', textColor: '#04342C',
+        name: 'Calendly',
+        desc: 'Elimina el ping-pong de emails para quedar con alguien. Un dolor muy específico que cualquier profesional entiende en 5 segundos.',
+        why: 'Empezó bootstrapped, creció orgánicamente por referidos. Llegó a una valoración de $3B en 2021. Resolvía algo pequeño pero muy frecuente.',
+        stats: ['$3B valoración 2021', '10M+ usuarios', 'Boca a boca fuerte']
+      },
+      {
+        initials: 'TR', bg: '#1D9E75', textColor: '#E1F5EE',
+        name: 'Trainual',
+        desc: 'Documentación y formación de empleados para PYMEs. Exactamente el mismo concepto que el SOPify del ejemplo anterior.',
+        why: 'Problema ignorado por las grandes plataformas. PYMEs pagando $49–$199/mes. Bootstrapped, rentable, más de 3.000 empresas clientes.',
+        stats: ['+3.000 empresas', '$49–199/mes', 'Bootstrapped rentable']
+      }
+    ],
+    lesson: 'El patrón de la buena idea: un problema frecuente y concreto, un usuario que lo entiende en segundos y está dispuesto a pagar. Crece de forma sostenida sin necesitar ser viral.',
+    users: [0,500,2000,4500,7000,9000,11500,14000,17000,21000,25000],
+    milestones: ['','Primeros pagos','Producto validado','Equipo pequeño','Breakeven','€1M ARR','Expansión','Dev senior','Rentable','Bootstrapped','Consolidado']
+  },
+  {
+    tabClass: 'active-blue',
+    color: '#378ADD',
+    colorLight: 'rgba(55,138,221,0.1)',
+    tagBg: '#B5D4F4', tagColor: '#042C53',
+    borderColor: '#378ADD',
+    label: 'Escenario 3 · Gran idea global',
+    apps: [
+      {
+        initials: 'NO', bg: '#B5D4F4', textColor: '#042C53',
+        name: 'Notion',
+        desc: 'Todo en uno: notas, wikis, bases de datos, proyectos. Empezó casi sin funding, creció por comunidad y templates. Disponible en múltiples idiomas desde muy pronto.',
+        why: 'No inventó nada nuevo, pero lo unificó todo en un sistema flexible. La comunidad creó templates que lo hicieron viral en cada nicho. Hoy vale $10B.',
+        stats: ['$10B valoración', '30M+ usuarios', 'Viral por comunidad']
+      },
+      {
+        initials: 'FG', bg: '#85B7EB', textColor: '#042C53',
+        name: 'Figma',
+        desc: 'Diseño colaborativo en el navegador. Antes del diseño era local, lento y caro. Figma lo hizo online, colaborativo y con versión gratuita generosa.',
+        why: 'Resolvió el dolor de los equipos de diseño distribuidos globalmente. Adobe intentó comprarlo por $20B. El multiidioma y la colaboración eran el core.',
+        stats: ['Intento compra $20B', 'Millones de diseñadores', 'Colaboración como core']
+      },
+      {
+        initials: 'LN', bg: '#378ADD', textColor: '#E6F1FB',
+        name: 'Linear',
+        desc: 'Gestor de issues y proyectos para equipos de software. Hizo lo que Jira hace pero rápido, limpio y sin fricción. Amado por equipos técnicos de todo el mundo.',
+        why: 'Problema universal para cualquier equipo de producto. Sin necesidad de traducción: el dolor es el mismo en cualquier idioma. Creció por reputación entre devs.',
+        stats: ['Miles de equipos', 'Amado por devs', 'Crecimiento orgánico']
+      }
+    ],
+    lesson: 'El patrón de la gran idea global: resuelve algo que sufren millones sin importar el país. La comunidad y el boca a boca hacen el marketing. El multiidioma amplifica el mercado sin esfuerzo adicional.',
+    users: [0,1000,6000,18000,33000,50000,72000,98000,130000,168000,210000],
+    milestones: ['','MVP multilingüe','Tracción orgánica','Viral 2 mercados','€1M ARR','€5M ARR','Equipo 10+','Asia','Marca global','Serie B','Top 3 categoría']
+  },
+  {
+    tabClass: 'active-amber',
+    color: '#BA7517',
+    colorLight: 'rgba(186,117,23,0.1)',
+    tagBg: '#FAC775', tagColor: '#412402',
+    borderColor: '#BA7517',
+    label: 'Escenario 4 · Excepcional',
+    apps: [
+      {
+        initials: 'DL', bg: '#FAC775', textColor: '#412402',
+        name: 'Duolingo',
+        desc: 'Aprender idiomas gratis, en cualquier idioma, en 5 minutos al día. Convirtió algo aburrido en un juego con racha diaria. El usuario no puede dejarlo.',
+        why: 'La racha diaria es el mecanismo de retención más efectivo de la historia de las apps. Hoy tiene 500M de usuarios y cotiza en bolsa. Empezó con una idea simple.',
+        stats: ['500M usuarios', 'Cotiza en bolsa', 'Hábito diario irresistible']
+      },
+      {
+        initials: 'CA', bg: '#EF9F27', textColor: '#412402',
+        name: 'Calm',
+        desc: 'Meditación guiada, sonidos para dormir, historias para relajarse. Resuelve ansiedad e insomnio, dos problemas universales que afectan a miles de millones.',
+        why: 'Problema emocional universal. No necesita traducción cultural profunda. Vale $2B, con millones de suscriptores a $69/año. El usuario lo usa cada noche.',
+        stats: ['$2B valoración', 'Millones de suscriptores', '$69/año por usuario']
+      },
+      {
+        initials: 'CV', bg: '#BA7517', textColor: '#FAEEDA',
+        name: 'Canva',
+        desc: 'Diseño para personas que no saben diseñar. Empezó en Australia con $3M, atacó un mercado ignorado por Adobe. Hoy disponible en 100+ idiomas.',
+        why: 'Democratizó algo que antes era exclusivo. El usuario tipo es universal: cualquier persona que necesite hacer algo visual. Vale $40B. Empezó como vosotros.',
+        stats: ['$40B valoración', '150M usuarios', '100+ idiomas desde pronto']
+      }
+    ],
+    lesson: 'El patrón excepcional: cambia un hábito diario. El usuario lo usa aunque no tenga que hacerlo. Se convierte en parte de la rutina. El churn cae al 1–2% porque dejarlo tiene un coste emocional.',
+    users: [0,3000,20000,70000,150000,260000,400000,580000,800000,1100000,1500000],
+    milestones: ['','Tracción semana 1','Viral sin ads','20 países','€10M ARR','Equipo 30+','Referencia sector','Adquisición posible','€100M ARR','Unicornio','Categoría propia']
+  }
+];
+
+let current = 1;
+let chart = null;
+
+function fmt(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1)+'M';
+  if (n >= 1000) return Math.round(n/1000)+'k';
+  return n.toString();
+}
+function fmtEur(n) {
+  if (n >= 1000000) return '€'+(n/1000000).toFixed(1)+'M';
+  if (n >= 1000) return '€'+Math.round(n/1000)+'k';
+  return '€'+n;
+}
+
+function set(idx) {
+  current = idx;
+  const s = scenarios[idx];
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.className = 'tab';
+    if (i === idx) t.className = 'tab '+s.tabClass;
+  });
+  render();
+}
+
+function render() {
+  const s = scenarios[current];
+  const u10 = s.users[10];
+  const mrr10 = Math.round(u10*9.99);
+  const arr10 = mrr10*12;
+  const u5 = s.users[5];
+  const mrr5 = Math.round(u5*9.99);
+  const labels = ['Año 0','Año 1','Año 2','Año 3','Año 4','Año 5','Año 6','Año 7','Año 8','Año 9','Año 10'];
+
+  const appsHtml = s.apps.map(a => `
+    <div class="app-row">
+      <div class="app-logo" style="background:${a.bg};color:${a.textColor}">${a.initials}</div>
+      <div style="flex:1;min-width:0">
+        <div class="app-name">${a.name}</div>
+        <div class="app-desc">${a.desc}</div>
+        <div class="app-why" style="color:${s.color}">${a.why}</div>
+        <div class="app-stats">${a.stats.map(st=>`<span class="stat-pill">${st}</span>`).join('')}</div>
+      </div>
+    </div>
+  `).join('');
+
+  let timelineHtml = `<div class="thead"><div class="th" style="min-width:40px">Año</div><div class="th" style="min-width:80px">Usuarios</div><div class="th" style="min-width:80px">MRR</div><div class="th" style="min-width:80px">ARR</div><div class="th">Hito</div></div>`;
+  for (let i=1;i<=10;i++) {
+    const u=s.users[i], mrr=Math.round(u*9.99), arr=mrr*12;
+    const isKey=[2,5,10].includes(i);
+    timelineHtml+=`<div class="trow" style="${isKey?'background:var(--color-background-secondary);border-radius:6px;padding:7px 6px;':''}"><div class="tyear">Año ${i}</div><div class="tusers">${fmt(u)}</div><div class="tmrr">${fmtEur(mrr)}/mes</div><div class="tarr">${fmtEur(arr)}/año</div><div class="thito">${s.milestones[i]}</div></div>`;
+  }
+
+  document.getElementById('content').innerHTML = `
+    <div class="top-card">
+      <span class="scenario-label" style="background:${s.tagBg};color:${s.tagColor}">${s.label}</span>
+      ${appsHtml}
+      <div class="lesson-box" style="border-left-color:${s.borderColor}">
+        <div class="lesson-label" style="color:${s.borderColor}">Patrón común</div>
+        <div class="lesson-text">${s.lesson}</div>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="mcard"><div class="mcard-label">Usuarios año 10</div><div class="mcard-val">${fmt(u10)}</div><div class="mcard-sub">pagando €9,99/mes</div></div>
+      <div class="mcard"><div class="mcard-label">MRR año 10</div><div class="mcard-val">${fmtEur(mrr10)}</div><div class="mcard-sub">al mes</div></div>
+      <div class="mcard"><div class="mcard-label">ARR año 10</div><div class="mcard-val">${fmtEur(arr10)}</div><div class="mcard-sub">al año</div></div>
+      <div class="mcard"><div class="mcard-label">MRR año 5</div><div class="mcard-val">${fmtEur(mrr5)}</div><div class="mcard-sub">punto intermedio</div></div>
+    </div>
+
+    <div class="chart-wrap"><canvas id="mainChart" role="img" aria-label="Proyección usuarios 10 años escenario ${s.label}"></canvas></div>
+    <div class="timeline">${timelineHtml}</div>
+  `;
+
+  if (chart) chart.destroy();
+  chart = new Chart(document.getElementById('mainChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Usuarios',
+        data: s.users,
+        borderColor: s.color,
+        backgroundColor: s.colorLight,
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointBackgroundColor: s.color,
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${fmt(ctx.parsed.y)} usuarios · MRR ${fmtEur(Math.round(ctx.parsed.y*9.99))}` } }
+      },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
+        y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 }, callback: v => fmt(v) } }
+      }
+    }
+  });
+}
+
+set(1);
+</script>
