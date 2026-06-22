@@ -618,6 +618,7 @@ function render() {
 
 set(1);
 
+// ── maximize / minimize ──
 const ICON_EXPAND = `<polyline points="1,5 1,1 5,1"/><polyline points="8,1 12,1 12,5"/><polyline points="12,8 12,12 8,12"/><polyline points="5,12 1,12 1,8"/>`;
 const ICON_SHRINK = `<polyline points="5,1 5,5 1,5"/><polyline points="12,5 8,5 8,1"/><polyline points="8,12 8,8 12,8"/><polyline points="1,8 5,8 5,12"/>`;
 
@@ -630,7 +631,8 @@ function toggleSize() {
 }
 
 
-const PAIN = 'success'; 
+// ── login ──
+const PAIN = 'success'; // cambia esto
 function checkPwd() {
   const val = document.getElementById('pwd').value;
   const input = document.getElementById('pwd');
