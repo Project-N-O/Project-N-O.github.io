@@ -578,11 +578,11 @@ function toggleSize() {
 }
 
 
-const PASSWORD = 'success';  
+const PAYHN = 'success';  
 function checkPwd() {
   const val = document.getElementById('pwd').value;
   const input = document.getElementById('pwd');
-  if (val === PASSWORD) {
+  if (val === PAYHN) {
     document.getElementById('login-overlay').classList.add('hidden');
     sessionStorage.setItem('auth', '1');
   } else {
