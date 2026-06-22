@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>4 Escenarios · Apps reales como ejemplo</title>
+  <title>Project NOS</title>
   <style>
     :root {
       --color-background-primary: #FFFFFF;
@@ -256,6 +257,58 @@
       margin-top: 8px;
       min-height: 16px;
     }
+
+    /* ── mobile (iPhone 13/16: 390px wide) ── */
+    @media (max-width: 430px) {
+      body { padding: 1rem 0.75rem; padding-top: 3.5rem; }
+
+      h1 { font-size: 0.95rem; margin-bottom: 1rem; }
+
+      /* tabs scroll horizontally instead of wrapping */
+      .tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 6px;
+        margin-bottom: 14px;
+        padding-bottom: 2px;
+      }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tab { white-space: nowrap; padding: 6px 12px; font-size: 12px; flex-shrink: 0; }
+
+      /* card padding reduced */
+      .top-card { padding: 1rem; }
+
+      /* app rows tighter */
+      .app-row { gap: 10px; padding: 10px 0; }
+      .app-logo { width: 32px; height: 32px; font-size: 10px; }
+      .app-name  { font-size: 13px; }
+      .app-desc  { font-size: 11px; }
+      .app-why   { font-size: 11px; }
+      .stat-pill { font-size: 10px; padding: 2px 6px; }
+
+      /* metrics 2 columns on mobile */
+      .metrics { grid-template-columns: 1fr 1fr; gap: 6px; }
+      .mcard { padding: 8px 10px; }
+      .mcard-val { font-size: 15px; }
+
+      /* timeline: hide ARR column, tighten */
+      .tarr  { display: none; }
+      .th:nth-child(4) { display: none; }
+      .tyear { min-width: 34px; }
+      .tusers { min-width: 60px; font-size: 11px; }
+      .tmrr  { min-width: 64px; font-size: 11px; }
+      .thito { font-size: 10px; }
+      .trow, .trow.key { gap: 6px; }
+
+      /* chart slightly shorter */
+      .chart-wrap { height: 160px; }
+
+      /* topbar button smaller */
+      .btn-toggle { padding: 4px 10px; font-size: 11px; }
+      .topbar { padding: 8px 10px; }
+    }
   </style>
 </head>
 <body>
@@ -285,7 +338,7 @@
 </div>
 
 <div class="page">
-  <h1>4 escenarios con apps reales como ejemplo</h1>
+  <h1>Project NOS</h1>
 
   <div class="tabs">
     <button class="tab" onclick="set(0)" id="tab0">Idea mediocre</button>
@@ -565,7 +618,6 @@ function render() {
 
 set(1);
 
-// ── maximize / minimize ──
 const ICON_EXPAND = `<polyline points="1,5 1,1 5,1"/><polyline points="8,1 12,1 12,5"/><polyline points="12,8 12,12 8,12"/><polyline points="5,12 1,12 1,8"/>`;
 const ICON_SHRINK = `<polyline points="5,1 5,5 1,5"/><polyline points="12,5 8,5 8,1"/><polyline points="8,12 8,8 12,8"/><polyline points="1,8 5,8 5,12"/>`;
 
@@ -578,11 +630,11 @@ function toggleSize() {
 }
 
 
-const PAYHN = 'success';  
+const PAIN = 'success'; 
 function checkPwd() {
   const val = document.getElementById('pwd').value;
   const input = document.getElementById('pwd');
-  if (val === PAYHN) {
+  if (val === PAIN) {
     document.getElementById('login-overlay').classList.add('hidden');
     sessionStorage.setItem('auth', '1');
   } else {
