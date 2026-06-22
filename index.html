@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Corpora Project</title>
+  <title>4 Escenarios · Apps reales como ejemplo</title>
   <style>
     :root {
       --color-background-primary: #FFFFFF;
@@ -33,8 +33,53 @@
       color: var(--color-text-primary);
       min-height: 100vh;
       padding: 2rem 1rem;
+      transition: padding 0.3s ease;
     }
-    .page { max-width: 720px; margin: 0 auto; }
+    body.maximized {
+      padding: 0;
+    }
+
+    /* ── top bar ── */
+    .topbar {
+      position: fixed;
+      top: 0; right: 0;
+      padding: 10px 14px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: var(--border-radius-md);
+      border: 0.5px solid var(--color-border-secondary);
+      background: var(--color-background-primary);
+      color: var(--color-text-secondary);
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      transition: all 0.15s;
+    }
+    .btn-toggle:hover {
+      color: var(--color-text-primary);
+      border-color: var(--color-text-secondary);
+    }
+    .btn-toggle svg { flex-shrink: 0; }
+
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      transition: max-width 0.3s ease, padding 0.3s ease;
+    }
+    body.maximized .page {
+      max-width: 100%;
+      padding: 1.5rem 2rem;
+    }
+
     h1 {
       font-size: 1.1rem;
       font-weight: 600;
@@ -141,11 +186,106 @@
     .tmrr  { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
     .tarr  { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
     .thito { font-size: 11px; color: var(--color-text-secondary); margin-left: auto; text-align: right; }
+
+    /* ── login overlay ── */
+    #login-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--color-background-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #login-overlay.hidden { display: none; }
+    .login-card {
+      background: var(--color-background-primary);
+      border: 0.5px solid var(--color-border-tertiary);
+      border-radius: var(--border-radius-lg);
+      padding: 2rem 2.5rem;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .login-card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 0.35rem;
+    }
+    .login-card p {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      margin-bottom: 1.5rem;
+    }
+    .login-input {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: var(--border-radius-md);
+      border: 0.5px solid var(--color-border-secondary);
+      background: var(--color-background-secondary);
+      color: var(--color-text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+      text-align: center;
+      letter-spacing: 0.1em;
+    }
+    .login-input:focus { border-color: var(--color-text-secondary); }
+    .login-input.error { border-color: #E05252; }
+    .login-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 9px;
+      border-radius: var(--border-radius-md);
+      border: none;
+      background: var(--color-text-primary);
+      color: var(--color-background-primary);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .login-btn:hover { opacity: 0.85; }
+    .login-error {
+      font-size: 11px;
+      color: #E05252;
+      margin-top: 8px;
+      min-height: 16px;
+    }
   </style>
 </head>
 <body>
+
+
+<div id="login-overlay">
+  <div class="login-card">
+    <h2>Acceso restringido</h2>
+    <p>Introduce la contraseña para continuar</p>
+    <input class="login-input" type="password" id="pwd" placeholder="••••••••"
+           onkeydown="if(event.key==='Enter') checkPwd()">
+    <button class="login-btn" onclick="checkPwd()">Entrar</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<div class="topbar">
+  <button class="btn-toggle" onclick="toggleSize()" id="toggleBtn" title="Maximizar">
+    <svg id="toggleIcon" width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="1,5 1,1 5,1"/>
+      <polyline points="8,1 12,1 12,5"/>
+      <polyline points="12,8 12,12 8,12"/>
+      <polyline points="5,12 1,12 1,8"/>
+    </svg>
+    <span id="toggleLabel">Maximizar</span>
+  </button>
+</div>
+
 <div class="page">
-  <h1>Corpora Project</h1>
+  <h1>4 escenarios con apps reales como ejemplo</h1>
 
   <div class="tabs">
     <button class="tab" onclick="set(0)" id="tab0">Idea mediocre</button>
@@ -424,6 +564,38 @@ function render() {
 }
 
 set(1);
+
+// ── maximize / minimize ──
+const ICON_EXPAND = `<polyline points="1,5 1,1 5,1"/><polyline points="8,1 12,1 12,5"/><polyline points="12,8 12,12 8,12"/><polyline points="5,12 1,12 1,8"/>`;
+const ICON_SHRINK = `<polyline points="5,1 5,5 1,5"/><polyline points="12,5 8,5 8,1"/><polyline points="8,12 8,8 12,8"/><polyline points="1,8 5,8 5,12"/>`;
+
+function toggleSize() {
+  const maximized = document.body.classList.toggle('maximized');
+  document.getElementById('toggleLabel').textContent = maximized ? 'Minimizar' : 'Maximizar';
+  document.getElementById('toggleIcon').innerHTML = maximized ? ICON_SHRINK : ICON_EXPAND;
+  document.getElementById('toggleBtn').title = maximized ? 'Minimizar' : 'Maximizar';
+  if (chart) { chart.resize(); }
+}
+
+
+const PASSWORD = 'success';  
+function checkPwd() {
+  const val = document.getElementById('pwd').value;
+  const input = document.getElementById('pwd');
+  if (val === PASSWORD) {
+    document.getElementById('login-overlay').classList.add('hidden');
+    sessionStorage.setItem('auth', '1');
+  } else {
+    input.classList.add('error');
+    document.getElementById('login-error').textContent = 'Contraseña incorrecta';
+    setTimeout(() => { input.classList.remove('error'); input.value = ''; input.focus(); }, 1200);
+  }
+}
+// keep unlocked during same session
+if (sessionStorage.getItem('auth') === '1') {
+  document.getElementById('login-overlay').classList.add('hidden');
+}
+
 </script>
 </body>
 </html>
