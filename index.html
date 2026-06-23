@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -372,15 +371,15 @@
       transition: left 0.28s ease;
       overflow: hidden;
     }
-    .sidebar.mobile-open { left: 0; }
+    /* mobile-open must come AFTER collapsed so it always wins */
     .sidebar.collapsed { width: 220px !important; left: -220px; }
+    .sidebar.mobile-open { left: 0 !important; }
     .sidebar-header { display: flex !important; }
     .nav-label { opacity: 1 !important; width: auto !important; }
     .sidebar-logo { opacity: 1 !important; width: 28px !important; }
 
     /* Hamburger button top-left */
     .mobile-menu-btn {
-      display: flex;
       display: flex;
       position: fixed;
       top: 12px; left: 12px;
@@ -589,7 +588,7 @@
 
   <!-- ESCENARIOS -->
   <div class="section active" id="section-escenarios">
-    <h1>4 escenarios con apps reales</h1>
+    <h1>Project-NOS</h1>
     <div class="tabs">
       <button class="tab" onclick="set(0)" id="tab0">Idea mediocre</button>
       <button class="tab" onclick="set(1)" id="tab1">Buena idea</button>
@@ -599,13 +598,12 @@
     <div id="content"></div>
   </div>
 
-  <!-- CUENTAS ATRÁS -->
   <div class="section" id="section-cuentas">
     <h1>Cuentas atrás</h1>
     <div class="countdown-grid">
 
       <div class="cd-card cd-since">
-        <div class="cd-title">O</div>
+        <div class="cd-title">"O"</div>
         <div class="cd-date">27 de febrero de 2027</div>
         <div class="cd-units">
           <div class="cd-unit"><span class="cd-num" id="s-days">--</span><span class="cd-label">días</span></div>
@@ -616,7 +614,7 @@
       </div>
 
       <div class="cd-card cd-until">
-        <div class="cd-title">A</div>
+        <div class="cd-title">"A"</div>
         <div class="cd-date">18 de mayo de 2027</div>
         <div class="cd-units">
           <div class="cd-unit"><span class="cd-num" id="u-days">--</span><span class="cd-label">días</span></div>
@@ -634,11 +632,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 // ── SIDEBAR ──
+
+function isMobile() { return window.innerWidth < 768; }
+
+// En desktop: colapsa/expande. En mobile: cierra el sidebar 
 function toggleSidebar() {
+  if (isMobile()) {
+    closeSidebar();
+    return;
+  }
   const sb = document.getElementById('sidebar');
   const main = document.getElementById('main');
   sb.classList.toggle('collapsed');
   main.classList.toggle('expanded');
+}
+
+function openSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  // Eliminar .collapsed por si se arrastró desde desktop — es lo que causaba el bloqueo
+  sidebar.classList.remove('collapsed');
+  sidebar.classList.add('mobile-open');
+  document.getElementById('sidebar-overlay').classList.add('visible');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebar-overlay').classList.remove('visible');
 }
 
 // ── SECTIONS ──
@@ -647,7 +666,7 @@ function showSection(id) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('section-' + id).classList.add('active');
   document.getElementById('nav-' + id).classList.add('active');
-  if (window.innerWidth < 768) closeSidebar();
+  if (isMobile()) closeSidebar();
 }
 
 // ── SCENARIOS ──
@@ -860,7 +879,6 @@ function updateCountdowns() {
   const since = new Date('2027-02-27T00:00:00');
   const until = new Date('2027-05-18T00:00:00');
 
-  // Since
   let diffS = Math.max(0, since - now) / 1000;
   const sDays  = Math.floor(diffS / 86400); diffS -= sDays * 86400;
   const sHours = Math.floor(diffS / 3600);  diffS -= sHours * 3600;
@@ -871,7 +889,6 @@ function updateCountdowns() {
   document.getElementById('s-mins').textContent  = pad(sMins);
   document.getElementById('s-secs').textContent  = pad(sSecs);
 
-  // Until
   let diffU = Math.max(0, until - now) / 1000;
   const uDays  = Math.floor(diffU / 86400); diffU -= uDays * 86400;
   const uHours = Math.floor(diffU / 3600);  diffU -= uHours * 3600;
@@ -887,11 +904,11 @@ updateCountdowns();
 setInterval(updateCountdowns, 1000);
 
 // ── LOGIN ──
-const PASSWORD = 'success';
+const PAYN = 'success';
 function checkPwd() {
   const val = document.getElementById('pwd').value;
   const input = document.getElementById('pwd');
-  if (val === PASSWORD) {
+  if (val === PAYN) {
     document.getElementById('login-overlay').classList.add('hidden');
     sessionStorage.setItem('auth', '1');
   } else {
@@ -904,27 +921,18 @@ if (sessionStorage.getItem('auth') === '1') {
   document.getElementById('login-overlay').classList.add('hidden');
 }
 
-// ── MOBILE SIDEBAR ──
-function isMobile() { return window.innerWidth < 768; }
-
-function openSidebar() {
-  document.getElementById('sidebar').classList.add('mobile-open');
-  document.getElementById('sidebar-overlay').classList.add('visible');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('mobile-open');
-  document.getElementById('sidebar-overlay').classList.remove('visible');
-}
-
-// Show/hide hamburger based on screen size
+// ── RESIZE ──
 function handleResize() {
   const sidebar = document.getElementById('sidebar');
   if (!isMobile()) {
-    // Desktop: always show sidebar, reset mobile classes
+    // Al volver a desktop: limpiar estado mobile
     sidebar.classList.remove('mobile-open');
     document.getElementById('sidebar-overlay').classList.remove('visible');
-    // restore desktop margin
     document.getElementById('main').style.marginLeft = '';
+  } else {
+    // Al entrar en mobile: limpiar .collapsed para que el hamburger funcione
+    sidebar.classList.remove('collapsed');
+    document.getElementById('main').classList.remove('expanded');
   }
 }
 window.addEventListener('resize', handleResize);
