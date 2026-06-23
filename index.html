@@ -1233,20 +1233,25 @@ function deleteRoute(id) {
   });
 }
 
-// ── INGLÉS (contenido fijo, edítalo aquí en el código) ──
-const inglesEntries = [
-  {
-    title: 'Clase de Inglés para Principiantes (Primera Clase) (1:42:33)',
-    text: `Esta clase sería la primera, la más fundamental que enseña las Basics del inglés. Aprendizaje de las primeras estructuras gramaticales y construcción de oraciones simples.`,
-    link: 'https://www.youtube.com/watch?v=Z6GGAQOMX8c&t=1s'
-  }
-  // Añade más vídeos copiando el bloque de arriba:
-  // {
-  //   title: 'Vídeo 2',
-  //   text: `Texto del segundo vídeo...`,
-  //   link: 'https://...'
-  // },
-];
+let inglesEntries = [];
+
+fetch('eng.json')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('No se pudo cargar eng.json');
+    }
+    return response.json();
+  })
+  .then(data => {
+    inglesEntries = data;
+    renderIngles();
+  })
+  .catch(error => {
+    console.error('Error cargando el JSON:', error);
+
+    document.getElementById('ingles-list').innerHTML =
+      '<p class="routemap-empty">Error cargando las clases de inglés.</p>';
+  });
 
 function renderIngles() {
   const container = document.getElementById('ingles-list');
