@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -306,14 +307,14 @@
   }
   .cd-since, .cd-until { border-top: 0.5px solid var(--color-border-tertiary); }
 
-  /* ── LOGIN OVERLAY ── */
-  #login-overlay {
+  /* ── LOGIN OVERLAYS (Firebase + success) ── */
+  #login-overlay, #firebase-login-overlay {
     position: fixed; inset: 0;
     background: var(--color-background-secondary);
     display: flex; align-items: center; justify-content: center;
     z-index: 9999;
   }
-  #login-overlay.hidden { display: none; }
+  #login-overlay.hidden, #firebase-login-overlay.hidden { display: none; }
   .login-card {
     background: var(--color-background-primary);
     border: 0.5px solid var(--color-border-tertiary);
@@ -335,6 +336,8 @@
     outline: none; transition: border-color 0.15s;
     text-align: center; letter-spacing: 0.1em;
   }
+  .login-input.text-left { text-align: left; letter-spacing: normal; }
+  .login-card .login-input + .login-input { margin-top: 10px; }
   .login-input:focus { border-color: var(--color-text-secondary); }
   .login-input.error { border-color: #E05252; }
   .login-btn {
@@ -346,6 +349,82 @@
   }
   .login-btn:hover { opacity: 0.85; }
   .login-error { font-size: 11px; color: #E05252; margin-top: 8px; min-height: 16px; }
+
+  /* ── FORM FIELDS (Routemap) ── */
+  .field-input {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field-input:focus { border-color: var(--color-text-secondary); }
+  .field-input + .field-input { margin-top: 8px; }
+  textarea.field-input { resize: vertical; min-height: 70px; line-height: 1.5; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 10px; display: block; }
+  .form-actions { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .btn-primary {
+    padding: 8px 18px;
+    border-radius: var(--border-radius-md);
+    border: none;
+    background: var(--color-text-primary);
+    color: var(--color-background-primary);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .form-error { font-size: 11px; color: #E05252; }
+
+  /* ── ROUTEMAP ── */
+  .routemap-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .routemap-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 1.1rem;
+  }
+  .routemap-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .routemap-date { font-size: 11px; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+  .routemap-delete {
+    background: none; border: none; cursor: pointer;
+    color: var(--color-text-secondary); font-size: 13px; padding: 2px 6px;
+    border-radius: 6px; transition: background .15s, color .15s;
+  }
+  .routemap-delete:hover { background: var(--color-background-secondary); color: #E05252; }
+  .routemap-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px; }
+  .routemap-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .routemap-empty { font-size: 13px; color: var(--color-text-secondary); text-align: center; padding: 2rem 0; }
+
+  /* ── INGLÉS ── */
+  .ingles-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 12px;
+  }
+  .ingles-card-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 6px; }
+  .ingles-text { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; white-space: pre-wrap; word-break: break-word; margin-bottom: 12px; }
+  .ingles-link-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    font-size: 12px; font-weight: 500;
+    text-decoration: none;
+    transition: background .15s;
+  }
+  .ingles-link-btn:hover { background: var(--color-border-tertiary); }
 
   /* ── MOBILE ── */
 
@@ -535,8 +614,21 @@
   </svg>
 </button>
 
-<!-- LOGIN -->
-<div id="login-overlay">
+<!-- LOGIN FIREBASE (paso 1: solo cuentas creadas a mano por ti, ej. tú y tu amigo) -->
+<div id="firebase-login-overlay">
+  <div class="login-card">
+    <h2>Iniciar sesión</h2>
+    <p>Accede con tu correo y contraseña</p>
+    <input class="login-input text-left" type="email" id="fb-email" placeholder="correo@ejemplo.com" autocomplete="username">
+    <input class="login-input text-left" type="password" id="fb-pwd" placeholder="Contraseña" autocomplete="current-password"
+           onkeydown="if(event.key==='Enter') checkFirebaseLogin()">
+    <button class="login-btn" onclick="checkFirebaseLogin()">Entrar</button>
+    <div class="login-error" id="firebase-login-error"></div>
+  </div>
+</div>
+
+<!-- LOGIN SUCCESS (paso 2: se pide siempre, cada vez que se entra a la app) -->
+<div id="login-overlay" class="hidden">
   <div class="login-card">
     <h2>Acceso restringido</h2>
     <p>Introduce la contraseña para continuar</p>
@@ -579,6 +671,24 @@
         </svg>
       </span>
       <span class="nav-label">Libertad:</span>
+    </button>
+    <button class="nav-item" onclick="showSection('routemap')" id="nav-routemap">
+      <span class="nav-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 14s5-4.5 5-8a5 5 0 1 0-10 0c0 3.5 5 8 5 8z"/>
+          <circle cx="8" cy="6" r="1.5"/>
+        </svg>
+      </span>
+      <span class="nav-label">Routemap</span>
+    </button>
+    <button class="nav-item" onclick="showSection('ingles')" id="nav-ingles">
+      <span class="nav-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="6.5"/>
+          <path d="M1.5 8h13M8 1.5c1.8 1.8 2.8 4.2 2.8 6.5s-1 4.7-2.8 6.5c-1.8-1.8-2.8-4.2-2.8-6.5S6.2 3.3 8 1.5z"/>
+        </svg>
+      </span>
+      <span class="nav-label">Inglés</span>
     </button>
   </div>
 </nav>
@@ -627,8 +737,119 @@
     </div>
   </div>
 
-</main>
+  <!-- ROUTEMAP -->
+  <div class="section" id="section-routemap">
+    <h1>Routemap</h1>
+    <div class="top-card">
+      <span class="form-label">Publicar nueva idea</span>
+      <input class="field-input" type="date" id="route-date">
+      <input class="field-input" type="text" id="route-title" placeholder="Título de la idea">
+      <textarea class="field-input" id="route-desc" placeholder="Descripción de la idea" rows="3"></textarea>
+      <div class="form-actions">
+        <button class="btn-primary" onclick="publishRoute()">Publicar</button>
+        <span class="form-error" id="route-error"></span>
+      </div>
+    </div>
+    <div class="routemap-list" id="routemap-list">
+      <p class="routemap-empty">Cargando...</p>
+    </div>
+  </div>
 
+  <!-- INGLÉS -->
+  <div class="section" id="section-ingles">
+    <h1>Inglés</h1>
+    <div id="ingles-list"></div>
+  </div>
+
+</main>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+  initializeFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDspWfT37vtvjSaQWVUT_hjE9alL2iDyT4",
+  authDomain: "nos-9c448.firebaseapp.com",
+  projectId: "nos-9c448",
+  storageBucket: "nos-9c448.firebasestorage.app",
+  messagingSenderId: "588123283452",
+  appId: "1:588123283452:web:5368f0beb255a1864f1c79"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+// experimentalAutoDetectLongPolling evita el error "Could not reach Cloud Firestore
+// backend" cuando un ad-blocker, extensión de privacidad o proxy bloquea el streaming.
+const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+  useFetchStreams: false
+});
+
+window.auth = auth;
+window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+window.onAuthStateChanged = onAuthStateChanged;
+window.db = db;
+window.collection = collection;
+window.addDoc = addDoc;
+window.deleteDoc = deleteDoc;
+window.doc = doc;
+window.serverTimestamp = serverTimestamp;
+
+let unsubscribeRoutemap = null;
+
+// Flujo:
+// - Sin sesión de Firebase -> mostrar pantalla de correo/contraseña.
+// - Con sesión de Firebase (incluida la persistida entre visitas) -> ocultar esa
+//   pantalla para siempre (hasta que cierren sesión) y mostrar SIEMPRE el paso "success".
+//   Además, empezar a escuchar en tiempo real los datos del Routemap.
+onAuthStateChanged(auth, (user) => {
+  const fbOverlay = document.getElementById('firebase-login-overlay');
+  const successOverlay = document.getElementById('login-overlay');
+  if (user) {
+    fbOverlay.classList.add('hidden');
+    successOverlay.classList.remove('hidden');
+
+    if (!unsubscribeRoutemap) {
+      try {
+        const q = query(collection(db, 'routemap'), orderBy('date', 'desc'));
+        unsubscribeRoutemap = onSnapshot(q, (snapshot) => {
+          const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+          if (window.renderRoutemap) window.renderRoutemap(items);
+        }, (err) => {
+          console.error('Error leyendo el Routemap:', err);
+          if (window.showRoutemapError) window.showRoutemapError(err.code ? `${err.code} — ${err.message}` : String(err));
+        });
+      } catch (err) {
+        console.error('Error iniciando el Routemap:', err);
+        if (window.showRoutemapError) window.showRoutemapError(String(err));
+      }
+    }
+  } else {
+    fbOverlay.classList.remove('hidden');
+    successOverlay.classList.add('hidden');
+    if (unsubscribeRoutemap) { unsubscribeRoutemap(); unsubscribeRoutemap = null; }
+  }
+});
+
+</script>
+  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 // ── SIDEBAR ──
@@ -903,23 +1124,146 @@ function updateCountdowns() {
 updateCountdowns();
 setInterval(updateCountdowns, 1000);
 
-// ── LOGIN ──
+// ── LOGIN FIREBASE (paso 1) ──
+function checkFirebaseLogin() {
+  const email = document.getElementById('fb-email').value.trim();
+  const password = document.getElementById('fb-pwd').value;
+  const errorEl = document.getElementById('firebase-login-error');
+  errorEl.textContent = '';
+
+  if (!email || !password) {
+    errorEl.textContent = 'Introduce correo y contraseña';
+    return;
+  }
+
+  window.signInWithEmailAndPassword(window.auth, email, password)
+    .catch(() => {
+      // Mensaje genérico a propósito: no decimos si falló el correo o la contraseña.
+      errorEl.textContent = 'Correo o contraseña incorrectos';
+      document.getElementById('fb-pwd').value = '';
+    });
+}
+
+// ── LOGIN SUCCESS (paso 2: se pide siempre) ──
 const PAYN = 'success';
 function checkPwd() {
   const val = document.getElementById('pwd').value;
   const input = document.getElementById('pwd');
   if (val === PAYN) {
     document.getElementById('login-overlay').classList.add('hidden');
-    sessionStorage.setItem('auth', '1');
   } else {
     input.classList.add('error');
     document.getElementById('login-error').textContent = 'Contraseña incorrecta';
     setTimeout(() => { input.classList.remove('error'); input.value = ''; input.focus(); }, 1200);
   }
 }
-if (sessionStorage.getItem('auth') === '1') {
-  document.getElementById('login-overlay').classList.add('hidden');
+
+// ── ROUTEMAP ──
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
 }
+
+function showRoutemapError(msg) {
+  const container = document.getElementById('routemap-list');
+  if (!container) return;
+  container.innerHTML = `<p class="routemap-empty" style="color:#E05252">Error cargando el Routemap: ${escapeHtml(msg)}</p>`;
+}
+window.showRoutemapError = showRoutemapError;
+
+function formatRouteDate(isoDate) {
+  if (!isoDate) return '';
+  const d = new Date(isoDate + 'T00:00:00');
+  return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function renderRoutemap(items) {
+  const container = document.getElementById('routemap-list');
+  if (!container) return;
+  if (!items.length) {
+    container.innerHTML = '<p class="routemap-empty">Todavía no hay ninguna idea publicada.</p>';
+    return;
+  }
+  container.innerHTML = items.map(item => `
+    <div class="routemap-card">
+      <div class="routemap-card-head">
+        <span class="routemap-date">${formatRouteDate(item.date)}</span>
+        <button class="routemap-delete" onclick="deleteRoute('${item.id}')" title="Eliminar">✕</button>
+      </div>
+      <p class="routemap-title">${escapeHtml(item.title)}</p>
+      <p class="routemap-desc">${escapeHtml(item.description)}</p>
+    </div>`).join('');
+}
+window.renderRoutemap = renderRoutemap;
+
+function publishRoute() {
+  const dateEl = document.getElementById('route-date');
+  const titleEl = document.getElementById('route-title');
+  const descEl = document.getElementById('route-desc');
+  const errorEl = document.getElementById('route-error');
+  errorEl.textContent = '';
+
+  const date = dateEl.value;
+  const title = titleEl.value.trim();
+  const description = descEl.value.trim();
+
+  if (!date || !title || !description) {
+    errorEl.textContent = 'Rellena fecha, título y descripción';
+    return;
+  }
+
+  window.addDoc(window.collection(window.db, 'routemap'), {
+    date, title, description,
+    createdAt: window.serverTimestamp()
+  }).then(() => {
+    dateEl.value = '';
+    titleEl.value = '';
+    descEl.value = '';
+  }).catch((err) => {
+    errorEl.textContent = err.code ? `${err.code} — ${err.message}` : 'No se pudo publicar. Inténtalo de nuevo.';
+    console.error(err);
+  });
+}
+
+function deleteRoute(id) {
+  if (!confirm('¿Eliminar esta idea publicada?')) return;
+  window.deleteDoc(window.doc(window.db, 'routemap', id)).catch((err) => {
+    alert(err.code ? `${err.code} — ${err.message}` : 'No se pudo eliminar.');
+    console.error(err);
+  });
+}
+
+// ── INGLÉS (contenido fijo, edítalo aquí en el código) ──
+const inglesEntries = [
+  {
+    title: 'Vídeo 1',
+    text: `Pega aquí el texto/guion del vídeo en inglés.`,
+    link: 'https://www.youtube.com/'
+  }
+  // Añade más vídeos copiando el bloque de arriba:
+  // {
+  //   title: 'Vídeo 2',
+  //   text: `Texto del segundo vídeo...`,
+  //   link: 'https://...'
+  // },
+];
+
+function renderIngles() {
+  const container = document.getElementById('ingles-list');
+  if (!container) return;
+  if (!inglesEntries.length) {
+    container.innerHTML = '<p class="routemap-empty">Todavía no hay vídeos añadidos.</p>';
+    return;
+  }
+  container.innerHTML = inglesEntries.map(e => `
+    <div class="ingles-card">
+      <p class="ingles-card-title">${escapeHtml(e.title)}</p>
+      <p class="ingles-text">${escapeHtml(e.text)}</p>
+      <a class="ingles-link-btn" href="${e.link}" target="_blank" rel="noopener">Ver vídeo →</a>
+    </div>`).join('');
+}
+renderIngles();
 
 // ── RESIZE ──
 function handleResize() {
