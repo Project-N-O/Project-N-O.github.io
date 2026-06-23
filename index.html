@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,318 +7,413 @@
 <link rel="apple-touch-icon" sizes="120x120" href="Images/apple-touch-icon-iphone-retina-120x123.png">
 <link rel="apple-touch-icon" sizes="167x167" href="Images/apple-touch-icon-iphone-retina-167x163.png">
 <link rel="icon" type="image/png" sizes="32x32" href="Images/ds.png">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project NOS</title>
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project NOS</title>
+<style>
+  :root {
+    --color-background-primary: #FFFFFF;
+    --color-background-secondary: #F5F4F0;
+    --color-text-primary: #1A1A18;
+    --color-text-secondary: #6B6A65;
+    --color-border-tertiary: #E4E3DC;
+    --color-border-secondary: #D0CFC8;
+    --border-radius-lg: 12px;
+    --border-radius-md: 8px;
+    --sidebar-width: 220px;
+    --sidebar-collapsed: 56px;
+  }
+  @media (prefers-color-scheme: dark) {
     :root {
-      --color-background-primary: #FFFFFF;
-      --color-background-secondary: #F5F4F0;
-      --color-text-primary: #1A1A18;
-      --color-text-secondary: #6B6A65;
-      --color-border-tertiary: #E4E3DC;
-      --color-border-secondary: #D0CFC8;
-      --border-radius-lg: 12px;
-      --border-radius-md: 8px;
+      --color-background-primary: #1C1C1A;
+      --color-background-secondary: #252522;
+      --color-text-primary: #F0EFE8;
+      --color-text-secondary: #9A9990;
+      --color-border-tertiary: #2E2E2B;
+      --color-border-secondary: #3A3A36;
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --color-background-primary: #1C1C1A;
-        --color-background-secondary: #252522;
-        --color-text-primary: #F0EFE8;
-        --color-text-secondary: #9A9990;
-        --color-border-tertiary: #2E2E2B;
-        --color-border-secondary: #3A3A36;
-      }
+  }
+ 
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    display: flex;
+  }
+ 
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    background: var(--color-background-primary);
+    border-right: 0.5px solid var(--color-border-tertiary);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    transition: width 0.25s ease;
+    overflow: hidden;
+  }
+  .sidebar.collapsed { width: var(--sidebar-collapsed); }
+ 
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 14px 12px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    min-height: 52px;
+  }
+  .sidebar-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    object-fit: cover;
+    flex-shrink: 0;
+    opacity: 1;
+    transition: opacity 0.2s, width 0.2s;
+  }
+  .sidebar.collapsed .sidebar-logo { opacity: 0; width: 0; overflow: hidden; pointer-events: none; }
+ 
+  .btn-collapse {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+  }
+  .btn-collapse:hover { color: var(--color-text-primary); background: var(--color-background-secondary); }
+ 
+  .sidebar-nav {
+    flex: 1;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    font-family: inherit;
+    text-align: left;
+    white-space: nowrap;
+    width: 100%;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-item:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .nav-item.active { background: var(--color-background-secondary); color: var(--color-text-primary); font-weight: 500; }
+  .nav-icon { flex-shrink: 0; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; }
+  .nav-label { opacity: 1; transition: opacity 0.2s; white-space: nowrap; }
+  .sidebar.collapsed .nav-label { opacity: 0; width: 0; overflow: hidden; }
+  .sidebar.collapsed .nav-item { justify-content: center; padding: 9px 0; }
+  .sidebar.collapsed .sidebar-header { justify-content: center; padding: 16px 0 12px; }
+ 
+  /* ── MAIN CONTENT ── */
+  .main {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    min-height: 100vh;
+    padding: 2rem 1.5rem;
+    transition: margin-left 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .main > * { width: 100%; max-width: 760px; }
+  .main.expanded { margin-left: var(--sidebar-collapsed); }
+ 
+  /* sections */
+  .section { display: none; }
+  .section.active { display: block; }
+  #section-cuentas.active { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; }
+ 
+  h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 1.5rem;
+  }
+ 
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    padding: 6px 16px;
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-secondary);
+    background: transparent;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .tab.active-gray  { background: #D3D1C7; color: #2C2C2A; border-color: #D3D1C7; }
+  .tab.active-teal  { background: #9FE1CB; color: #04342C; border-color: #9FE1CB; }
+  .tab.active-blue  { background: #B5D4F4; color: #042C53; border-color: #B5D4F4; }
+  .tab.active-amber { background: #FAC775; color: #412402; border-color: #FAC775; }
+ 
+  /* ── CARD ── */
+  .top-card {
+    border-radius: var(--border-radius-lg);
+    border: 0.5px solid var(--color-border-tertiary);
+    padding: 1.25rem;
+    margin-bottom: 14px;
+    background: var(--color-background-primary);
+  }
+  .scenario-label {
+    font-size: 11px; padding: 3px 10px;
+    border-radius: var(--border-radius-md);
+    display: inline-block; margin-bottom: 10px; font-weight: 500;
+  }
+ 
+  /* ── APP ROWS ── */
+  .app-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0; border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .app-row:last-of-type { border-bottom: none; }
+  .app-logo {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; flex-shrink: 0;
+  }
+  .app-name  { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+  .app-desc  { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; margin: 0 0 4px; }
+  .app-why   { font-size: 12px; line-height: 1.5; margin: 0; }
+  .app-stats { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+  .stat-pill {
+    font-size: 11px; padding: 2px 8px;
+    border-radius: var(--border-radius-md);
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+  }
+ 
+  /* ── LESSON BOX ── */
+  .lesson-box {
+    border-left: 2px solid; padding: 10px 14px;
+    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+    background: var(--color-background-secondary); margin-top: 14px;
+  }
+  .lesson-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; font-weight: 600; }
+  .lesson-text  { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+ 
+  /* ── METRICS ── */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 14px 0; }
+  .mcard { background: var(--color-background-primary); border-radius: var(--border-radius-md); padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); }
+  .mcard-label { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 3px; }
+  .mcard-val   { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
+  .mcard-sub   { font-size: 10px; color: var(--color-text-secondary); margin-top: 1px; }
+ 
+  /* ── CHART ── */
+  .chart-wrap { position: relative; width: 100%; height: 200px; margin-top: 14px; }
+ 
+  /* ── TIMELINE ── */
+  .timeline { margin-top: 20px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 14px; }
+  .thead { display: flex; gap: 10px; padding: 0 0 5px; }
+  .th { font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+  .trow { display: flex; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
+  .trow:last-child { border-bottom: none; }
+  .trow.key { background: var(--color-background-secondary); border-radius: 6px; padding: 7px 6px; }
+  .tyear  { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); min-width: 40px; }
+  .tusers { font-size: 12px; font-weight: 500; color: var(--color-text-primary); min-width: 80px; }
+  .tmrr   { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
+  .tarr   { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
+  .thito  { font-size: 11px; color: var(--color-text-secondary); margin-left: auto; text-align: right; }
+ 
+  /* ── COUNTDOWN SECTION ── */
+  #section-cuentas {
+    display: none;
+    min-height: 80vh;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  #section-cuentas.active {
+    display: flex;
+  }
+  .countdown-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .cd-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+  }
+  .cd-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .cd-date {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-bottom: 1.25rem;
+  }
+  .cd-units {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .cd-unit { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .cd-num {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .cd-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+  }
+  .cd-sep {
+    font-size: 22px;
+    color: var(--color-border-secondary);
+    font-weight: 300;
+    align-self: flex-start;
+    padding-top: 2px;
+  }
+  .cd-since { border-top: 2px solid #9FE1CB; }
+  .cd-until { border-top: 2px solid #FAC775; }
+  .cd-since .cd-num { color: #1D9E75; }
+  .cd-until .cd-num { color: #BA7517; }
+ 
+  /* ── LOGIN OVERLAY ── */
+  #login-overlay {
+    position: fixed; inset: 0;
+    background: var(--color-background-secondary);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+  }
+  #login-overlay.hidden { display: none; }
+  .login-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem 2.5rem;
+    width: 100%; max-width: 340px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  .login-card h2 { font-size: 1rem; font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.35rem; }
+  .login-card p  { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
+  .login-input {
+    width: 100%; padding: 9px 12px;
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    font-size: 14px; font-family: inherit;
+    outline: none; transition: border-color 0.15s;
+    text-align: center; letter-spacing: 0.1em;
+  }
+  .login-input:focus { border-color: var(--color-text-secondary); }
+  .login-input.error { border-color: #E05252; }
+  .login-btn {
+    margin-top: 12px; width: 100%; padding: 9px;
+    border-radius: var(--border-radius-md); border: none;
+    background: var(--color-text-primary); color: var(--color-background-primary);
+    font-size: 13px; font-weight: 500; font-family: inherit;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .login-btn:hover { opacity: 0.85; }
+  .login-error { font-size: 11px; color: #E05252; margin-top: 8px; min-height: 16px; }
+ 
+  /* ── MOBILE ── */
+  @media (max-width: 430px) {
+    .sidebar {
+      width: 100%;
+      height: 56px;
+      min-height: unset;
+      flex-direction: row;
+      top: auto; bottom: 0; left: 0; right: 0;
+      border-right: none;
+      border-top: 0.5px solid var(--color-border-tertiary);
+      overflow: visible;
     }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--color-background-secondary);
-      color: var(--color-text-primary);
-      min-height: 100vh;
-      padding: 2rem 1rem;
-      transition: padding 0.3s ease;
-    }
-    body.maximized {
+    .sidebar.collapsed { width: 100%; }
+    .sidebar-header { display: none; }
+    .sidebar-nav {
+      flex-direction: row;
       padding: 0;
-    }
-
-    /* ── top bar ── */
-    .topbar {
-      position: fixed;
-      top: 0; right: 0;
-      padding: 10px 14px;
-      z-index: 999;
-      display: flex;
+      gap: 0;
+      width: 100%;
+      justify-content: space-around;
       align-items: center;
-      gap: 8px;
     }
-    .btn-toggle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
-      border-radius: var(--border-radius-md);
-      border: 0.5px solid var(--color-border-secondary);
-      background: var(--color-background-primary);
-      color: var(--color-text-secondary);
-      font-size: 12px;
-      font-family: inherit;
-      cursor: pointer;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      transition: all 0.15s;
-    }
-    .btn-toggle:hover {
-      color: var(--color-text-primary);
-      border-color: var(--color-text-secondary);
-    }
-    .btn-toggle svg { flex-shrink: 0; }
-
-    .page {
-      max-width: 720px;
-      margin: 0 auto;
-      transition: max-width 0.3s ease, padding 0.3s ease;
-    }
-    body.maximized .page {
-      max-width: 100%;
-      padding: 1.5rem 2rem;
-    }
-
-    h1 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--color-text-primary);
-      margin-bottom: 1.5rem;
-    }
-
-    /* ── tabs ── */
-    .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab {
-      padding: 6px 16px;
-      border-radius: var(--border-radius-md);
-      border: 0.5px solid var(--color-border-secondary);
-      background: transparent;
-      font-size: 13px;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: inherit;
-    }
-    .tab.active-gray  { background: #D3D1C7; color: #2C2C2A; border-color: #D3D1C7; }
-    .tab.active-teal  { background: #9FE1CB; color: #04342C; border-color: #9FE1CB; }
-    .tab.active-blue  { background: #B5D4F4; color: #042C53; border-color: #B5D4F4; }
-    .tab.active-amber { background: #FAC775; color: #412402; border-color: #FAC775; }
-
-    /* ── card ── */
-    .top-card {
-      border-radius: var(--border-radius-lg);
-      border: 0.5px solid var(--color-border-tertiary);
-      padding: 1.25rem;
-      margin-bottom: 14px;
-      background: var(--color-background-primary);
-    }
-    .scenario-label {
-      font-size: 11px;
-      padding: 3px 10px;
-      border-radius: var(--border-radius-md);
-      display: inline-block;
-      margin-bottom: 10px;
-      font-weight: 500;
-    }
-
-    /* ── app rows ── */
-    .app-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 0.5px solid var(--color-border-tertiary);
-    }
-    .app-row:last-of-type { border-bottom: none; }
-    .app-logo {
-      width: 36px; height: 36px;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 600;
-      flex-shrink: 0;
-    }
-    .app-name  { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
-    .app-desc  { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; margin: 0 0 4px; }
-    .app-why   { font-size: 12px; line-height: 1.5; margin: 0; }
-    .app-stats { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
-    .stat-pill {
-      font-size: 11px; padding: 2px 8px;
-      border-radius: var(--border-radius-md);
-      background: var(--color-background-secondary);
-      color: var(--color-text-secondary);
-    }
-
-    /* ── lesson box ── */
-    .lesson-box {
-      border-left: 2px solid;
-      padding: 10px 14px;
-      border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
-      background: var(--color-background-secondary);
-      margin-top: 14px;
-    }
-    .lesson-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; font-weight: 600; }
-    .lesson-text  { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
-
-    /* ── metrics ── */
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 8px; margin: 14px 0;
-    }
-    .mcard { background: var(--color-background-primary); border-radius: var(--border-radius-md); padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); }
-    .mcard-label { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 3px; }
-    .mcard-val   { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
-    .mcard-sub   { font-size: 10px; color: var(--color-text-secondary); margin-top: 1px; }
-
-    /* ── chart ── */
-    .chart-wrap { position: relative; width: 100%; height: 200px; margin-top: 14px; }
-
-    /* ── timeline ── */
-    .timeline { margin-top: 20px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 14px; }
-    .thead { display: flex; gap: 10px; padding: 0 0 5px; }
-    .th { font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
-    .trow { display: flex; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: center; }
-    .trow:last-child { border-bottom: none; }
-    .trow.key { background: var(--color-background-secondary); border-radius: 6px; padding: 7px 6px; }
-    .tyear { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); min-width: 40px; }
-    .tusers{ font-size: 12px; font-weight: 500; color: var(--color-text-primary); min-width: 80px; }
-    .tmrr  { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
-    .tarr  { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
-    .thito { font-size: 11px; color: var(--color-text-secondary); margin-left: auto; text-align: right; }
-
-    /* ── login overlay ── */
-    #login-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--color-background-secondary);
-      display: flex;
+    .nav-item {
+      flex-direction: column;
+      gap: 3px;
+      padding: 8px 6px;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
+      flex: 1;
+      border-radius: 0;
     }
-    #login-overlay.hidden { display: none; }
-    .login-card {
-      background: var(--color-background-primary);
-      border: 0.5px solid var(--color-border-tertiary);
-      border-radius: var(--border-radius-lg);
-      padding: 2rem 2.5rem;
-      width: 100%;
-      max-width: 340px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      text-align: center;
+    .nav-label { font-size: 10px; opacity: 1 !important; }
+    .main {
+      margin-left: 0 !important;
+      padding: 1rem 0.75rem;
+      padding-bottom: 72px;
+      max-width: 100%;
     }
-    .login-card h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text-primary);
-      margin-bottom: 0.35rem;
-    }
-    .login-card p {
-      font-size: 12px;
-      color: var(--color-text-secondary);
-      margin-bottom: 1.5rem;
-    }
-    .login-input {
-      width: 100%;
-      padding: 9px 12px;
-      border-radius: var(--border-radius-md);
-      border: 0.5px solid var(--color-border-secondary);
-      background: var(--color-background-secondary);
-      color: var(--color-text-primary);
-      font-size: 14px;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.15s;
-      text-align: center;
-      letter-spacing: 0.1em;
-    }
-    .login-input:focus { border-color: var(--color-text-secondary); }
-    .login-input.error { border-color: #E05252; }
-    .login-btn {
-      margin-top: 12px;
-      width: 100%;
-      padding: 9px;
-      border-radius: var(--border-radius-md);
-      border: none;
-      background: var(--color-text-primary);
-      color: var(--color-background-primary);
-      font-size: 13px;
-      font-weight: 500;
-      font-family: inherit;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-    .login-btn:hover { opacity: 0.85; }
-    .login-error {
-      font-size: 11px;
-      color: #E05252;
-      margin-top: 8px;
-      min-height: 16px;
-    }
-
-    /* ── mobile (iPhone 13/16: 390px wide) ── */
-    @media (max-width: 430px) {
-      body { padding: 1rem 0.75rem; padding-top: 3.5rem; }
-
-      h1 { font-size: 0.95rem; margin-bottom: 1rem; }
-
-      /* tabs scroll horizontally instead of wrapping */
-      .tabs {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        gap: 6px;
-        margin-bottom: 14px;
-        padding-bottom: 2px;
-      }
-      .tabs::-webkit-scrollbar { display: none; }
-      .tab { white-space: nowrap; padding: 6px 12px; font-size: 12px; flex-shrink: 0; }
-
-      /* card padding reduced */
-      .top-card { padding: 1rem; }
-
-      /* app rows tighter */
-      .app-row { gap: 10px; padding: 10px 0; }
-      .app-logo { width: 32px; height: 32px; font-size: 10px; }
-      .app-name  { font-size: 13px; }
-      .app-desc  { font-size: 11px; }
-      .app-why   { font-size: 11px; }
-      .stat-pill { font-size: 10px; padding: 2px 6px; }
-
-      /* metrics 2 columns on mobile */
-      .metrics { grid-template-columns: 1fr 1fr; gap: 6px; }
-      .mcard { padding: 8px 10px; }
-      .mcard-val { font-size: 15px; }
-
-      /* timeline: hide ARR column, tighten */
-      .tarr  { display: none; }
-      .th:nth-child(4) { display: none; }
-      .tyear { min-width: 34px; }
-      .tusers { min-width: 60px; font-size: 11px; }
-      .tmrr  { min-width: 64px; font-size: 11px; }
-      .thito { font-size: 10px; }
-      .trow, .trow.key { gap: 6px; }
-
-      /* chart slightly shorter */
-      .chart-wrap { height: 160px; }
-
-      /* topbar button smaller */
-      .btn-toggle { padding: 4px 10px; font-size: 11px; }
-      .topbar { padding: 8px 10px; }
-    }
-  </style>
+    h1 { font-size: 0.95rem; margin-bottom: 1rem; }
+    .tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 6px; margin-bottom: 14px; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { white-space: nowrap; padding: 6px 12px; font-size: 12px; flex-shrink: 0; }
+    .top-card { padding: 1rem; }
+    .app-row { gap: 10px; padding: 10px 0; }
+    .app-logo { width: 32px; height: 32px; font-size: 10px; }
+    .app-name { font-size: 13px; }
+    .app-desc, .app-why { font-size: 11px; }
+    .stat-pill { font-size: 10px; padding: 2px 6px; }
+    .metrics { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .mcard { padding: 8px 10px; }
+    .mcard-val { font-size: 15px; }
+    .tyear  { min-width: 28px; }
+    .tusers { min-width: 48px; font-size: 10px; }
+    .tmrr   { min-width: 54px; font-size: 10px; }
+    .tarr   { min-width: 54px; font-size: 10px; }
+    .thito  { display: none; }
+    .trow, .trow.key { gap: 6px; }
+    .chart-wrap { height: 160px; }
+    .countdown-grid { grid-template-columns: 1fr; }
+    .cd-num { font-size: 22px; }
+  }
+</style>
 </head>
 <body>
-
-
+ 
+<!-- LOGIN -->
 <div id="login-overlay">
   <div class="login-card">
     <h2>Acceso restringido</h2>
@@ -330,176 +424,207 @@
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
-
-<div class="topbar">
-  <button class="btn-toggle" onclick="toggleSize()" id="toggleBtn" title="Maximizar">
-    <svg id="toggleIcon" width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="1,5 1,1 5,1"/>
-      <polyline points="8,1 12,1 12,5"/>
-      <polyline points="12,8 12,12 8,12"/>
-      <polyline points="5,12 1,12 1,8"/>
-    </svg>
-    <span id="toggleLabel">Maximizar</span>
-  </button>
-</div>
-
-<div class="page">
-  <h1>Project NOS</h1>
-
-  <div class="tabs">
-    <button class="tab" onclick="set(0)" id="tab0">Idea mediocre</button>
-    <button class="tab" onclick="set(1)" id="tab1">Buena idea</button>
-    <button class="tab" onclick="set(2)" id="tab2">Gran idea global</button>
-    <button class="tab" onclick="set(3)" id="tab3">Excepcional</button>
+ 
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img class="sidebar-logo" src="Images/apple-touch-icon.png" alt="Project NOS">
+    <button class="btn-collapse" onclick="toggleSidebar()" title="Colapsar">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <line x1="3" y1="4" x2="13" y2="4"/>
+        <line x1="3" y1="8" x2="13" y2="8"/>
+        <line x1="3" y1="12" x2="13" y2="12"/>
+      </svg>
+    </button>
   </div>
-
-  <div id="content"></div>
-</div>
-
+  <div class="sidebar-nav">
+    <button class="nav-item active" onclick="showSection('escenarios')" id="nav-escenarios">
+      <span class="nav-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="5" height="5" rx="1"/>
+          <rect x="9" y="2" width="5" height="5" rx="1"/>
+          <rect x="2" y="9" width="5" height="5" rx="1"/>
+          <rect x="9" y="9" width="5" height="5" rx="1"/>
+        </svg>
+      </span>
+      <span class="nav-label">Escenarios</span>
+    </button>
+    <button class="nav-item" onclick="showSection('cuentas')" id="nav-cuentas">
+      <span class="nav-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="6"/>
+          <polyline points="8,4.5 8,8 10.5,9.5"/>
+        </svg>
+      </span>
+      <span class="nav-label">Cuentas atrás</span>
+    </button>
+  </div>
+</nav>
+ 
+<!-- MAIN -->
+<main class="main" id="main">
+ 
+  <!-- ESCENARIOS -->
+  <div class="section active" id="section-escenarios">
+    <h1>4 escenarios con apps reales</h1>
+    <div class="tabs">
+      <button class="tab" onclick="set(0)" id="tab0">Idea mediocre</button>
+      <button class="tab" onclick="set(1)" id="tab1">Buena idea</button>
+      <button class="tab" onclick="set(2)" id="tab2">Gran idea global</button>
+      <button class="tab" onclick="set(3)" id="tab3">Excepcional</button>
+    </div>
+    <div id="content"></div>
+  </div>
+ 
+  <!-- CUENTAS ATRÁS -->
+  <div class="section" id="section-cuentas">
+    <h1>Cuentas atrás</h1>
+    <div class="countdown-grid">
+ 
+      <div class="cd-card cd-since">
+        <div class="cd-title">O</div>
+        <div class="cd-date">27 de febrero de 2027</div>
+        <div class="cd-units">
+          <div class="cd-unit"><span class="cd-num" id="s-days">--</span><span class="cd-label">días</span></div>
+          <div class="cd-unit"><span class="cd-num" id="s-hours">--</span><span class="cd-label">horas</span></div>
+          <div class="cd-unit"><span class="cd-num" id="s-mins">--</span><span class="cd-label">min</span></div>
+          <div class="cd-unit"><span class="cd-num" id="s-secs">--</span><span class="cd-label">seg</span></div>
+        </div>
+      </div>
+ 
+      <div class="cd-card cd-until">
+        <div class="cd-title">A</div>
+        <div class="cd-date">18 de mayo de 2027</div>
+        <div class="cd-units">
+          <div class="cd-unit"><span class="cd-num" id="u-days">--</span><span class="cd-label">días</span></div>
+          <div class="cd-unit"><span class="cd-num" id="u-hours">--</span><span class="cd-label">horas</span></div>
+          <div class="cd-unit"><span class="cd-num" id="u-mins">--</span><span class="cd-label">min</span></div>
+          <div class="cd-unit"><span class="cd-num" id="u-secs">--</span><span class="cd-label">seg</span></div>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+ 
+</main>
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+// ── SIDEBAR ──
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const main = document.getElementById('main');
+  sb.classList.toggle('collapsed');
+  main.classList.toggle('expanded');
+}
+ 
+// ── SECTIONS ──
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+}
+ 
+// ── SCENARIOS ──
 const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
 const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
 const tickColor = '#888780';
-
+ 
 const scenarios = [
   {
-    tabClass: 'active-gray',
-    color: '#888780', colorLight: 'rgba(136,135,128,0.08)',
-    tagBg: '#D3D1C7', tagColor: '#2C2C2A',
-    borderColor: '#888780',
+    tabClass: 'active-gray', color: '#888780', colorLight: 'rgba(136,135,128,0.08)',
+    tagBg: '#D3D1C7', tagColor: '#2C2C2A', borderColor: '#888780',
     label: 'Escenario 1 · Idea mediocre',
     apps: [
-      {
-        initials: 'WL', bg: '#D3D1C7', textColor: '#2C2C2A',
-        name: 'Wunderlist',
-        desc: 'App de listas de tareas con buen diseño. Creada en 2011, creció bien pero nunca encontró un diferencial claro frente a Things, OmniFocus o Remember the Milk.',
-        why: 'Microsoft la compró en 2015 por ~$100M y la cerró en 2020. Sin diferencial real, acabó absorbida.',
-        stats: ['Vendida ~$100M', 'Cerrada en 2020', 'Sin modelo sostenible']
-      },
-      {
-        initials: 'Any', bg: '#B4B2A9', textColor: '#2C2C2A',
-        name: 'Any.do',
-        desc: 'Otra app de tareas y listas con diseño minimalista. Lleva desde 2011 y sigue existiendo, pero nunca despegó como categoría propia.',
-        why: 'Sobrevive pero no domina. Con millones de descargas gratuitas y conversión a pago muy baja. El problema: no hay urgencia en cambiar de app de notas.',
-        stats: ['~5M usuarios', 'Conversión pago ~2%', 'Mercado saturado']
-      },
-      {
-        initials: 'SC', bg: '#888780', textColor: '#F1EFE8',
-        name: 'Sunrise Calendar',
-        desc: 'Calendario bonito con integración de apps. Diseño excelente, pero solucionaba algo que Google Calendar ya hacía gratis.',
-        why: 'Microsoft la compró en 2015 y la cerró al año siguiente. Un diseño bonito no es un diferencial sostenible.',
-        stats: ['Comprada por Microsoft', 'Cerrada en 2016', 'Sin ventaja real']
-      }
+      { initials:'WL', bg:'#D3D1C7', textColor:'#2C2C2A', name:'Wunderlist',
+        desc:'App de listas de tareas con buen diseño. Creada en 2011, creció bien pero nunca encontró un diferencial claro frente a Things, OmniFocus o Remember the Milk.',
+        why:'Microsoft la compró en 2015 por ~$100M y la cerró en 2020. Sin diferencial real, acabó absorbida.',
+        stats:['Vendida ~$100M','Cerrada en 2020','Sin modelo sostenible'] },
+      { initials:'Any', bg:'#B4B2A9', textColor:'#2C2C2A', name:'Any.do',
+        desc:'Otra app de tareas y listas con diseño minimalista. Lleva desde 2011 y sigue existiendo, pero nunca despegó como categoría propia.',
+        why:'Sobrevive pero no domina. Con millones de descargas gratuitas y conversión a pago muy baja. El problema: no hay urgencia en cambiar de app de notas.',
+        stats:['~5M usuarios','Conversión pago ~2%','Mercado saturado'] },
+      { initials:'SC', bg:'#888780', textColor:'#F1EFE8', name:'Sunrise Calendar',
+        desc:'Calendario bonito con integración de apps. Diseño excelente, pero solucionaba algo que Google Calendar ya hacía gratis.',
+        why:'Microsoft la compró en 2015 y la cerró al año siguiente. Un diseño bonito no es un diferencial sostenible.',
+        stats:['Comprada por Microsoft','Cerrada en 2016','Sin ventaja real'] }
     ],
-    lesson: 'El patrón de la idea mediocre: buen diseño, buena ejecución, pero el problema ya estaba resuelto por otros de forma suficientemente buena. El usuario no tiene urgencia en pagar.',
-    users: [0,120,400,700,900,1100,1300,1500,1700,1900,2200],
-    milestones: ['','Primeros usuarios','Crecimiento lento','Churn alto','Estancado','Rivales te superan','Pivotar o morir','Nicho pequeño','Sobreviviendo','Sin crecimiento','Empresa pequeña']
+    lesson:'El patrón de la idea mediocre: buen diseño, buena ejecución, pero el problema ya estaba resuelto por otros de forma suficientemente buena. El usuario no tiene urgencia en pagar.',
+    users:[0,120,400,700,900,1100,1300,1500,1700,1900,2200],
+    milestones:['','Primeros usuarios','Crecimiento lento','Churn alto','Estancado','Rivales te superan','Pivotar o morir','Nicho pequeño','Sobreviviendo','Sin crecimiento','Empresa pequeña']
   },
   {
-    tabClass: 'active-teal',
-    color: '#1D9E75', colorLight: 'rgba(29,158,117,0.1)',
-    tagBg: '#9FE1CB', tagColor: '#04342C',
-    borderColor: '#1D9E75',
+    tabClass: 'active-teal', color: '#1D9E75', colorLight: 'rgba(29,158,117,0.1)',
+    tagBg: '#9FE1CB', tagColor: '#04342C', borderColor: '#1D9E75',
     label: 'Escenario 2 · Buena idea',
     apps: [
-      {
-        initials: 'TG', bg: '#9FE1CB', textColor: '#04342C',
-        name: 'Toggl',
-        desc: 'Control de tiempo para freelancers y equipos. Resuelve un dolor concreto: saber en qué gastas tu tiempo para facturar mejor o ser más productivo.',
-        why: 'Problema real, usuario claro. Bootstrapped durante años, rentable, más de 5M de usuarios. No es viral pero la gente que lo necesita no lo deja.',
-        stats: ['+5M usuarios', 'Bootstrapped', 'Rentable y sólido']
-      },
-      {
-        initials: 'CL', bg: '#5DCAA5', textColor: '#04342C',
-        name: 'Calendly',
-        desc: 'Elimina el ping-pong de emails para quedar con alguien. Un dolor muy específico que cualquier profesional entiende en 5 segundos.',
-        why: 'Empezó bootstrapped, creció orgánicamente por referidos. Llegó a una valoración de $3B en 2021. Resolvía algo pequeño pero muy frecuente.',
-        stats: ['$3B valoración 2021', '10M+ usuarios', 'Boca a boca fuerte']
-      },
-      {
-        initials: 'TR', bg: '#1D9E75', textColor: '#E1F5EE',
-        name: 'Trainual',
-        desc: 'Documentación y formación de empleados para PYMEs. Exactamente el mismo concepto que el SOPify del ejemplo anterior.',
-        why: 'Problema ignorado por las grandes plataformas. PYMEs pagando $49–$199/mes. Bootstrapped, rentable, más de 3.000 empresas clientes.',
-        stats: ['+3.000 empresas', '$49–199/mes', 'Bootstrapped rentable']
-      }
+      { initials:'TG', bg:'#9FE1CB', textColor:'#04342C', name:'Toggl',
+        desc:'Control de tiempo para freelancers y equipos. Resuelve un dolor concreto: saber en qué gastas tu tiempo para facturar mejor o ser más productivo.',
+        why:'Problema real, usuario claro. Bootstrapped durante años, rentable, más de 5M de usuarios. No es viral pero la gente que lo necesita no lo deja.',
+        stats:['+5M usuarios','Bootstrapped','Rentable y sólido'] },
+      { initials:'CL', bg:'#5DCAA5', textColor:'#04342C', name:'Calendly',
+        desc:'Elimina el ping-pong de emails para quedar con alguien. Un dolor muy específico que cualquier profesional entiende en 5 segundos.',
+        why:'Empezó bootstrapped, creció orgánicamente por referidos. Llegó a una valoración de $3B en 2021. Resolvía algo pequeño pero muy frecuente.',
+        stats:['$3B valoración 2021','10M+ usuarios','Boca a boca fuerte'] },
+      { initials:'TR', bg:'#1D9E75', textColor:'#E1F5EE', name:'Trainual',
+        desc:'Documentación y formación de empleados para PYMEs. Exactamente el mismo concepto que el SOPify del ejemplo anterior.',
+        why:'Problema ignorado por las grandes plataformas. PYMEs pagando $49–$199/mes. Bootstrapped, rentable, más de 3.000 empresas clientes.',
+        stats:['+3.000 empresas','$49–199/mes','Bootstrapped rentable'] }
     ],
-    lesson: 'El patrón de la buena idea: un problema frecuente y concreto, un usuario que lo entiende en segundos y está dispuesto a pagar. Crece de forma sostenida sin necesitar ser viral.',
-    users: [0,500,2000,4500,7000,9000,11500,14000,17000,21000,25000],
-    milestones: ['','Primeros pagos','Producto validado','Equipo pequeño','Breakeven','€1M ARR','Expansión','Dev senior','Rentable','Bootstrapped','Consolidado']
+    lesson:'El patrón de la buena idea: un problema frecuente y concreto, un usuario que lo entiende en segundos y está dispuesto a pagar. Crece de forma sostenida sin necesitar ser viral.',
+    users:[0,500,2000,4500,7000,9000,11500,14000,17000,21000,25000],
+    milestones:['','Primeros pagos','Producto validado','Equipo pequeño','Breakeven','€1M ARR','Expansión','Dev senior','Rentable','Bootstrapped','Consolidado']
   },
   {
-    tabClass: 'active-blue',
-    color: '#378ADD', colorLight: 'rgba(55,138,221,0.1)',
-    tagBg: '#B5D4F4', tagColor: '#042C53',
-    borderColor: '#378ADD',
+    tabClass: 'active-blue', color: '#378ADD', colorLight: 'rgba(55,138,221,0.1)',
+    tagBg: '#B5D4F4', tagColor: '#042C53', borderColor: '#378ADD',
     label: 'Escenario 3 · Gran idea global',
     apps: [
-      {
-        initials: 'NO', bg: '#B5D4F4', textColor: '#042C53',
-        name: 'Notion',
-        desc: 'Todo en uno: notas, wikis, bases de datos, proyectos. Empezó casi sin funding, creció por comunidad y templates. Disponible en múltiples idiomas desde muy pronto.',
-        why: 'No inventó nada nuevo, pero lo unificó todo en un sistema flexible. La comunidad creó templates que lo hicieron viral en cada nicho. Hoy vale $10B.',
-        stats: ['$10B valoración', '30M+ usuarios', 'Viral por comunidad']
-      },
-      {
-        initials: 'FG', bg: '#85B7EB', textColor: '#042C53',
-        name: 'Figma',
-        desc: 'Diseño colaborativo en el navegador. Antes del diseño era local, lento y caro. Figma lo hizo online, colaborativo y con versión gratuita generosa.',
-        why: 'Resolvió el dolor de los equipos de diseño distribuidos globalmente. Adobe intentó comprarlo por $20B. El multiidioma y la colaboración eran el core.',
-        stats: ['Intento compra $20B', 'Millones de diseñadores', 'Colaboración como core']
-      },
-      {
-        initials: 'LN', bg: '#378ADD', textColor: '#E6F1FB',
-        name: 'Linear',
-        desc: 'Gestor de issues y proyectos para equipos de software. Hizo lo que Jira hace pero rápido, limpio y sin fricción. Amado por equipos técnicos de todo el mundo.',
-        why: 'Problema universal para cualquier equipo de producto. Sin necesidad de traducción: el dolor es el mismo en cualquier idioma. Creció por reputación entre devs.',
-        stats: ['Miles de equipos', 'Amado por devs', 'Crecimiento orgánico']
-      }
+      { initials:'NO', bg:'#B5D4F4', textColor:'#042C53', name:'Notion',
+        desc:'Todo en uno: notas, wikis, bases de datos, proyectos. Empezó casi sin funding, creció por comunidad y templates. Disponible en múltiples idiomas desde muy pronto.',
+        why:'No inventó nada nuevo, pero lo unificó todo en un sistema flexible. La comunidad creó templates que lo hicieron viral en cada nicho. Hoy vale $10B.',
+        stats:['$10B valoración','30M+ usuarios','Viral por comunidad'] },
+      { initials:'FG', bg:'#85B7EB', textColor:'#042C53', name:'Figma',
+        desc:'Diseño colaborativo en el navegador. Antes del diseño era local, lento y caro. Figma lo hizo online, colaborativo y con versión gratuita generosa.',
+        why:'Resolvió el dolor de los equipos de diseño distribuidos globalmente. Adobe intentó comprarlo por $20B. El multiidioma y la colaboración eran el core.',
+        stats:['Intento compra $20B','Millones de diseñadores','Colaboración como core'] },
+      { initials:'LN', bg:'#378ADD', textColor:'#E6F1FB', name:'Linear',
+        desc:'Gestor de issues y proyectos para equipos de software. Hizo lo que Jira hace pero rápido, limpio y sin fricción. Amado por equipos técnicos de todo el mundo.',
+        why:'Problema universal para cualquier equipo de producto. Sin necesidad de traducción: el dolor es el mismo en cualquier idioma. Creció por reputación entre devs.',
+        stats:['Miles de equipos','Amado por devs','Crecimiento orgánico'] }
     ],
-    lesson: 'El patrón de la gran idea global: resuelve algo que sufren millones sin importar el país. La comunidad y el boca a boca hacen el marketing. El multiidioma amplifica el mercado sin esfuerzo adicional.',
-    users: [0,1000,6000,18000,33000,50000,72000,98000,130000,168000,210000],
-    milestones: ['','MVP multilingüe','Tracción orgánica','Viral 2 mercados','€1M ARR','€5M ARR','Equipo 10+','Asia','Marca global','Serie B','Top 3 categoría']
+    lesson:'El patrón de la gran idea global: resuelve algo que sufren millones sin importar el país. La comunidad y el boca a boca hacen el marketing. El multiidioma amplifica el mercado sin esfuerzo adicional.',
+    users:[0,1000,6000,18000,33000,50000,72000,98000,130000,168000,210000],
+    milestones:['','MVP multilingüe','Tracción orgánica','Viral 2 mercados','€1M ARR','€5M ARR','Equipo 10+','Asia','Marca global','Serie B','Top 3 categoría']
   },
   {
-    tabClass: 'active-amber',
-    color: '#BA7517', colorLight: 'rgba(186,117,23,0.1)',
-    tagBg: '#FAC775', tagColor: '#412402',
-    borderColor: '#BA7517',
+    tabClass: 'active-amber', color: '#BA7517', colorLight: 'rgba(186,117,23,0.1)',
+    tagBg: '#FAC775', tagColor: '#412402', borderColor: '#BA7517',
     label: 'Escenario 4 · Excepcional',
     apps: [
-      {
-        initials: 'DL', bg: '#FAC775', textColor: '#412402',
-        name: 'Duolingo',
-        desc: 'Aprender idiomas gratis, en cualquier idioma, en 5 minutos al día. Convirtió algo aburrido en un juego con racha diaria. El usuario no puede dejarlo.',
-        why: 'La racha diaria es el mecanismo de retención más efectivo de la historia de las apps. Hoy tiene 500M de usuarios y cotiza en bolsa. Empezó con una idea simple.',
-        stats: ['500M usuarios', 'Cotiza en bolsa', 'Hábito diario irresistible']
-      },
-      {
-        initials: 'CA', bg: '#EF9F27', textColor: '#412402',
-        name: 'Calm',
-        desc: 'Meditación guiada, sonidos para dormir, historias para relajarse. Resuelve ansiedad e insomnio, dos problemas universales que afectan a miles de millones.',
-        why: 'Problema emocional universal. No necesita traducción cultural profunda. Vale $2B, con millones de suscriptores a $69/año. El usuario lo usa cada noche.',
-        stats: ['$2B valoración', 'Millones de suscriptores', '$69/año por usuario']
-      },
-      {
-        initials: 'CV', bg: '#BA7517', textColor: '#FAEEDA',
-        name: 'Canva',
-        desc: 'Diseño para personas que no saben diseñar. Empezó en Australia con $3M, atacó un mercado ignorado por Adobe. Hoy disponible en 100+ idiomas.',
-        why: 'Democratizó algo que antes era exclusivo. El usuario tipo es universal: cualquier persona que necesite hacer algo visual. Vale $40B. Empezó como vosotros.',
-        stats: ['$40B valoración', '150M usuarios', '100+ idiomas desde pronto']
-      }
+      { initials:'DL', bg:'#FAC775', textColor:'#412402', name:'Duolingo',
+        desc:'Aprender idiomas gratis, en cualquier idioma, en 5 minutos al día. Convirtió algo aburrido en un juego con racha diaria. El usuario no puede dejarlo.',
+        why:'La racha diaria es el mecanismo de retención más efectivo de la historia de las apps. Hoy tiene 500M de usuarios y cotiza en bolsa. Empezó con una idea simple.',
+        stats:['500M usuarios','Cotiza en bolsa','Hábito diario irresistible'] },
+      { initials:'CA', bg:'#EF9F27', textColor:'#412402', name:'Calm',
+        desc:'Meditación guiada, sonidos para dormir, historias para relajarse. Resuelve ansiedad e insomnio, dos problemas universales que afectan a miles de millones.',
+        why:'Problema emocional universal. No necesita traducción cultural profunda. Vale $2B, con millones de suscriptores a $69/año. El usuario lo usa cada noche.',
+        stats:['$2B valoración','Millones de suscriptores','$69/año por usuario'] },
+      { initials:'CV', bg:'#BA7517', textColor:'#FAEEDA', name:'Canva',
+        desc:'Diseño para personas que no saben diseñar. Empezó en Australia con $3M, atacó un mercado ignorado por Adobe. Hoy disponible en 100+ idiomas.',
+        why:'Democratizó algo que antes era exclusivo. El usuario tipo es universal: cualquier persona que necesite hacer algo visual. Vale $40B. Empezó como vosotros.',
+        stats:['$40B valoración','150M usuarios','100+ idiomas desde pronto'] }
     ],
-    lesson: 'El patrón excepcional: cambia un hábito diario. El usuario lo usa aunque no tenga que hacerlo. Se convierte en parte de la rutina. El churn cae al 1–2% porque dejarlo tiene un coste emocional.',
-    users: [0,3000,20000,70000,150000,260000,400000,580000,800000,1100000,1500000],
-    milestones: ['','Tracción semana 1','Viral sin ads','20 países','€10M ARR','Equipo 30+','Referencia sector','Adquisición posible','€100M ARR','Unicornio','Categoría propia']
+    lesson:'El patrón excepcional: cambia un hábito diario. El usuario lo usa aunque no tenga que hacerlo. Se convierte en parte de la rutina. El churn cae al 1–2% porque dejarlo tiene un coste emocional.',
+    users:[0,3000,20000,70000,150000,260000,400000,580000,800000,1100000,1500000],
+    milestones:['','Tracción semana 1','Viral sin ads','20 países','€10M ARR','Equipo 30+','Referencia sector','Adquisición posible','€100M ARR','Unicornio','Categoría propia']
   }
 ];
-
+ 
 let current = 1;
 let chart = null;
-
+ 
 function fmt(n) {
   if (n >= 1000000) return (n/1000000).toFixed(1)+'M';
   if (n >= 1000) return Math.round(n/1000)+'k';
@@ -510,7 +635,7 @@ function fmtEur(n) {
   if (n >= 1000) return '€'+Math.round(n/1000)+'k';
   return '€'+n;
 }
-
+ 
 function set(idx) {
   current = idx;
   const s = scenarios[idx];
@@ -519,16 +644,13 @@ function set(idx) {
   });
   render();
 }
-
+ 
 function render() {
   const s = scenarios[current];
-  const u10 = s.users[10];
-  const mrr10 = Math.round(u10 * 9.99);
-  const arr10 = mrr10 * 12;
-  const u5 = s.users[5];
-  const mrr5 = Math.round(u5 * 9.99);
+  const u10 = s.users[10], mrr10 = Math.round(u10*9.99), arr10 = mrr10*12;
+  const u5  = s.users[5],  mrr5  = Math.round(u5*9.99);
   const labels = ['Año 0','Año 1','Año 2','Año 3','Año 4','Año 5','Año 6','Año 7','Año 8','Año 9','Año 10'];
-
+ 
   const appsHtml = s.apps.map(a => `
     <div class="app-row">
       <div class="app-logo" style="background:${a.bg};color:${a.textColor}">${a.initials}</div>
@@ -536,11 +658,10 @@ function render() {
         <p class="app-name">${a.name}</p>
         <p class="app-desc">${a.desc}</p>
         <p class="app-why" style="color:${s.color}">${a.why}</p>
-        <div class="app-stats">${a.stats.map(st => `<span class="stat-pill">${st}</span>`).join('')}</div>
+        <div class="app-stats">${a.stats.map(st=>`<span class="stat-pill">${st}</span>`).join('')}</div>
       </div>
-    </div>
-  `).join('');
-
+    </div>`).join('');
+ 
   let timelineHtml = `
     <div class="thead">
       <span class="th" style="min-width:40px">Año</span>
@@ -549,12 +670,11 @@ function render() {
       <span class="th" style="min-width:80px">ARR</span>
       <span class="th" style="margin-left:auto">Hito</span>
     </div>`;
-
   for (let i = 1; i <= 10; i++) {
-    const u = s.users[i], mrr = Math.round(u * 9.99), arr = mrr * 12;
-    const isKey = [2, 5, 10].includes(i);
+    const u = s.users[i], mrr = Math.round(u*9.99), arr = mrr*12;
+    const isKey = [2,5,10].includes(i);
     timelineHtml += `
-      <div class="trow${isKey ? ' key' : ''}">
+      <div class="trow${isKey?' key':''}">
         <span class="tyear">Año ${i}</span>
         <span class="tusers">${fmt(u)}</span>
         <span class="tmrr">${fmtEur(mrr)}/mes</span>
@@ -562,7 +682,7 @@ function render() {
         <span class="thito">${s.milestones[i]}</span>
       </div>`;
   }
-
+ 
   document.getElementById('content').innerHTML = `
     <div class="top-card">
       <span class="scenario-label" style="background:${s.tagBg};color:${s.tagColor}">${s.label}</span>
@@ -572,77 +692,82 @@ function render() {
         <div class="lesson-text">${s.lesson}</div>
       </div>
     </div>
-
     <div class="metrics">
       <div class="mcard"><div class="mcard-label">Usuarios año 10</div><div class="mcard-val">${fmt(u10)}</div><div class="mcard-sub">pagando €9,99/mes</div></div>
       <div class="mcard"><div class="mcard-label">MRR año 10</div><div class="mcard-val">${fmtEur(mrr10)}</div><div class="mcard-sub">al mes</div></div>
       <div class="mcard"><div class="mcard-label">ARR año 10</div><div class="mcard-val">${fmtEur(arr10)}</div><div class="mcard-sub">al año</div></div>
       <div class="mcard"><div class="mcard-label">MRR año 5</div><div class="mcard-val">${fmtEur(mrr5)}</div><div class="mcard-sub">punto intermedio</div></div>
     </div>
-
     <div class="chart-wrap">
       <canvas id="mainChart" role="img" aria-label="Proyección usuarios 10 años · ${s.label}"></canvas>
     </div>
-    <div class="timeline">${timelineHtml}</div>
-  `;
-
+    <div class="timeline">${timelineHtml}</div>`;
+ 
   if (chart) chart.destroy();
   chart = new Chart(document.getElementById('mainChart'), {
     type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Usuarios',
-        data: s.users,
-        borderColor: s.color,
-        backgroundColor: s.colorLight,
-        borderWidth: 2.5,
-        pointRadius: 4,
-        pointBackgroundColor: s.color,
-        tension: 0.4,
-        fill: true
-      }]
-    },
+    data: { labels, datasets: [{
+      label: 'Usuarios', data: s.users,
+      borderColor: s.color, backgroundColor: s.colorLight,
+      borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: s.color,
+      tension: 0.4, fill: true
+    }]},
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` ${fmt(ctx.parsed.y)} usuarios · MRR ${fmtEur(Math.round(ctx.parsed.y * 9.99))}`
-          }
-        }
+        tooltip: { callbacks: { label: ctx => ` ${fmt(ctx.parsed.y)} usuarios · MRR ${fmtEur(Math.round(ctx.parsed.y*9.99))}` }}
       },
       scales: {
-        x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
-        y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 }, callback: v => fmt(v) } }
+        x: { grid:{color:gridColor}, ticks:{color:tickColor,font:{size:11}} },
+        y: { grid:{color:gridColor}, ticks:{color:tickColor,font:{size:11},callback:v=>fmt(v)} }
       }
     }
   });
 }
-
+ 
 set(1);
-
-// ── maximize / minimize ──
-const ICON_EXPAND = `<polyline points="1,5 1,1 5,1"/><polyline points="8,1 12,1 12,5"/><polyline points="12,8 12,12 8,12"/><polyline points="5,12 1,12 1,8"/>`;
-const ICON_SHRINK = `<polyline points="5,1 5,5 1,5"/><polyline points="12,5 8,5 8,1"/><polyline points="8,12 8,8 12,8"/><polyline points="1,8 5,8 5,12"/>`;
-
-function toggleSize() {
-  const maximized = document.body.classList.toggle('maximized');
-  document.getElementById('toggleLabel').textContent = maximized ? 'Minimizar' : 'Maximizar';
-  document.getElementById('toggleIcon').innerHTML = maximized ? ICON_SHRINK : ICON_EXPAND;
-  document.getElementById('toggleBtn').title = maximized ? 'Minimizar' : 'Maximizar';
-  if (chart) { chart.resize(); }
+ 
+// ── COUNTDOWNS ──
+function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
+ 
+function updateCountdowns() {
+  const now   = new Date();
+  const since = new Date('2027-02-27T00:00:00');
+  const until = new Date('2027-05-18T00:00:00');
+ 
+  // Since
+  let diffS = Math.max(0, since - now) / 1000;
+  const sDays  = Math.floor(diffS / 86400); diffS -= sDays * 86400;
+  const sHours = Math.floor(diffS / 3600);  diffS -= sHours * 3600;
+  const sMins  = Math.floor(diffS / 60);    diffS -= sMins * 60;
+  const sSecs  = Math.floor(diffS);
+  document.getElementById('s-days').textContent  = sDays;
+  document.getElementById('s-hours').textContent = pad(sHours);
+  document.getElementById('s-mins').textContent  = pad(sMins);
+  document.getElementById('s-secs').textContent  = pad(sSecs);
+ 
+  // Until
+  let diffU = Math.max(0, until - now) / 1000;
+  const uDays  = Math.floor(diffU / 86400); diffU -= uDays * 86400;
+  const uHours = Math.floor(diffU / 3600);  diffU -= uHours * 3600;
+  const uMins  = Math.floor(diffU / 60);    diffU -= uMins * 60;
+  const uSecs  = Math.floor(diffU);
+  document.getElementById('u-days').textContent  = uDays;
+  document.getElementById('u-hours').textContent = pad(uHours);
+  document.getElementById('u-mins').textContent  = pad(uMins);
+  document.getElementById('u-secs').textContent  = pad(uSecs);
 }
-
-
-// ── login ──
-const PAIN = 'success'; // cambia esto
+ 
+updateCountdowns();
+setInterval(updateCountdowns, 1000);
+ 
+// ── LOGIN ──
+const PASSWORD = 'success';
 function checkPwd() {
   const val = document.getElementById('pwd').value;
   const input = document.getElementById('pwd');
-  if (val === PAIN) {
+  if (val === PASSWORD) {
     document.getElementById('login-overlay').classList.add('hidden');
     sessionStorage.setItem('auth', '1');
   } else {
@@ -651,11 +776,9 @@ function checkPwd() {
     setTimeout(() => { input.classList.remove('error'); input.value = ''; input.focus(); }, 1200);
   }
 }
-// keep unlocked during same session
 if (sessionStorage.getItem('auth') === '1') {
   document.getElementById('login-overlay').classList.add('hidden');
 }
-
 </script>
 </body>
 </html>
