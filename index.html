@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -33,9 +34,9 @@
       --color-border-secondary: #3A3A36;
     }
   }
- 
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--color-background-secondary);
@@ -43,7 +44,7 @@
     min-height: 100vh;
     display: flex;
   }
- 
+
   /* ── SIDEBAR ── */
   .sidebar {
     width: var(--sidebar-width);
@@ -59,7 +60,7 @@
     overflow: hidden;
   }
   .sidebar.collapsed { width: var(--sidebar-collapsed); }
- 
+
   .sidebar-header {
     display: flex;
     align-items: center;
@@ -78,7 +79,7 @@
     transition: opacity 0.2s, width 0.2s;
   }
   .sidebar.collapsed .sidebar-logo { opacity: 0; width: 0; overflow: hidden; pointer-events: none; }
- 
+
   .btn-collapse {
     background: none;
     border: none;
@@ -93,7 +94,7 @@
     transition: color 0.15s, background 0.15s;
   }
   .btn-collapse:hover { color: var(--color-text-primary); background: var(--color-background-secondary); }
- 
+
   .sidebar-nav {
     flex: 1;
     padding: 10px 8px;
@@ -125,7 +126,7 @@
   .sidebar.collapsed .nav-label { opacity: 0; width: 0; overflow: hidden; }
   .sidebar.collapsed .nav-item { justify-content: center; padding: 9px 0; }
   .sidebar.collapsed .sidebar-header { justify-content: center; padding: 16px 0 12px; }
- 
+
   /* ── MAIN CONTENT ── */
   .main {
     margin-left: var(--sidebar-width);
@@ -139,19 +140,19 @@
   }
   .main > * { width: 100%; max-width: 760px; }
   .main.expanded { margin-left: var(--sidebar-collapsed); }
- 
+
   /* sections */
   .section { display: none; }
   .section.active { display: block; }
   #section-cuentas.active { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; }
- 
+
   h1 {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-text-primary);
     margin-bottom: 1.5rem;
   }
- 
+
   /* ── TABS ── */
   .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
   .tab {
@@ -169,7 +170,7 @@
   .tab.active-teal  { background: #9FE1CB; color: #04342C; border-color: #9FE1CB; }
   .tab.active-blue  { background: #B5D4F4; color: #042C53; border-color: #B5D4F4; }
   .tab.active-amber { background: #FAC775; color: #412402; border-color: #FAC775; }
- 
+
   /* ── CARD ── */
   .top-card {
     border-radius: var(--border-radius-lg);
@@ -183,7 +184,7 @@
     border-radius: var(--border-radius-md);
     display: inline-block; margin-bottom: 10px; font-weight: 500;
   }
- 
+
   /* ── APP ROWS ── */
   .app-row {
     display: flex; align-items: flex-start; gap: 12px;
@@ -205,7 +206,7 @@
     background: var(--color-background-secondary);
     color: var(--color-text-secondary);
   }
- 
+
   /* ── LESSON BOX ── */
   .lesson-box {
     border-left: 2px solid; padding: 10px 14px;
@@ -214,17 +215,17 @@
   }
   .lesson-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; font-weight: 600; }
   .lesson-text  { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
- 
+
   /* ── METRICS ── */
   .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 14px 0; }
   .mcard { background: var(--color-background-primary); border-radius: var(--border-radius-md); padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); }
   .mcard-label { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 3px; }
   .mcard-val   { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
   .mcard-sub   { font-size: 10px; color: var(--color-text-secondary); margin-top: 1px; }
- 
+
   /* ── CHART ── */
   .chart-wrap { position: relative; width: 100%; height: 200px; margin-top: 14px; }
- 
+
   /* ── TIMELINE ── */
   .timeline { margin-top: 20px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 14px; }
   .thead { display: flex; gap: 10px; padding: 0 0 5px; }
@@ -237,7 +238,7 @@
   .tmrr   { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
   .tarr   { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
   .thito  { font-size: 11px; color: var(--color-text-secondary); margin-left: auto; text-align: right; }
- 
+
   /* ── COUNTDOWN SECTION ── */
   #section-cuentas {
     display: none;
@@ -250,10 +251,12 @@
     display: flex;
   }
   .countdown-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 14px;
     margin-top: 8px;
+    width: 100%;
+    max-width: 420px;
   }
   .cd-card {
     background: var(--color-background-primary);
@@ -302,11 +305,8 @@
     align-self: flex-start;
     padding-top: 2px;
   }
-  .cd-since { border-top: 2px solid #9FE1CB; }
-  .cd-until { border-top: 2px solid #FAC775; }
-  .cd-since .cd-num { color: #1D9E75; }
-  .cd-until .cd-num { color: #BA7517; }
- 
+  .cd-since, .cd-until { border-top: 0.5px solid var(--color-border-tertiary); }
+
   /* ── LOGIN OVERLAY ── */
   #login-overlay {
     position: fixed; inset: 0;
@@ -347,72 +347,195 @@
   }
   .login-btn:hover { opacity: 0.85; }
   .login-error { font-size: 11px; color: #E05252; margin-top: 8px; min-height: 16px; }
- 
+
   /* ── MOBILE ── */
-  @media (max-width: 430px) {
+
+  /* Overlay to close sidebar on tap outside */
+  #sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 99;
+  }
+  #sidebar-overlay.visible { display: block; }
+
+  @media (max-width: 767px) {
+    /* Sidebar: hidden off-screen left, slides in on demand */
     .sidebar {
-      width: 100%;
-      height: 56px;
-      min-height: unset;
-      flex-direction: row;
-      top: auto; bottom: 0; left: 0; right: 0;
-      border-right: none;
-      border-top: 0.5px solid var(--color-border-tertiary);
-      overflow: visible;
-    }
-    .sidebar.collapsed { width: 100%; }
-    .sidebar-header { display: none; }
-    .sidebar-nav {
-      flex-direction: row;
-      padding: 0;
-      gap: 0;
-      width: 100%;
-      justify-content: space-around;
-      align-items: center;
-    }
-    .nav-item {
+      width: 220px !important;
+      min-height: 100vh;
       flex-direction: column;
-      gap: 3px;
-      padding: 8px 6px;
-      align-items: center;
-      justify-content: center;
-      flex: 1;
-      border-radius: 0;
+      top: 0; left: -220px; bottom: 0; right: auto;
+      border-right: 0.5px solid var(--color-border-tertiary);
+      border-top: none;
+      transition: left 0.28s ease;
+      overflow: hidden;
     }
-    .nav-label { font-size: 10px; opacity: 1 !important; }
+    .sidebar.mobile-open { left: 0; }
+    .sidebar.collapsed { width: 220px !important; left: -220px; }
+    .sidebar-header { display: flex !important; }
+    .nav-label { opacity: 1 !important; width: auto !important; }
+    .sidebar-logo { opacity: 1 !important; width: 28px !important; }
+
+    /* Hamburger button top-left */
+    .mobile-menu-btn {
+      display: flex;
+      display: flex;
+      position: fixed;
+      top: 12px; left: 12px;
+      z-index: 98;
+      background: var(--color-background-primary);
+      border: 0.5px solid var(--color-border-secondary);
+      border-radius: var(--border-radius-md);
+      padding: 7px;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
     .main {
       margin-left: 0 !important;
       padding: 1rem 0.75rem;
-      padding-bottom: 72px;
-      max-width: 100%;
+      padding-top: 3.5rem;
     }
     h1 { font-size: 0.95rem; margin-bottom: 1rem; }
+
+    /* Tabs scroll */
     .tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 6px; margin-bottom: 14px; }
     .tabs::-webkit-scrollbar { display: none; }
     .tab { white-space: nowrap; padding: 6px 12px; font-size: 12px; flex-shrink: 0; }
+
     .top-card { padding: 1rem; }
     .app-row { gap: 10px; padding: 10px 0; }
     .app-logo { width: 32px; height: 32px; font-size: 10px; }
     .app-name { font-size: 13px; }
     .app-desc, .app-why { font-size: 11px; }
     .stat-pill { font-size: 10px; padding: 2px 6px; }
+
+    /* Metrics 2 col */
     .metrics { grid-template-columns: 1fr 1fr; gap: 6px; }
     .mcard { padding: 8px 10px; }
     .mcard-val { font-size: 15px; }
-    .tyear  { min-width: 28px; }
-    .tusers { min-width: 48px; font-size: 10px; }
-    .tmrr   { min-width: 54px; font-size: 10px; }
-    .tarr   { min-width: 54px; font-size: 10px; }
-    .thito  { display: none; }
-    .trow, .trow.key { gap: 6px; }
+
+    /* Timeline — use a card layout instead of flex row */
+    .thead { display: none; }
+    .trow, .trow.key {
+      display: grid;
+      grid-template-columns: 36px 1fr 1fr 1fr;
+      gap: 4px;
+      padding: 8px 6px;
+      align-items: start;
+    }
+    .trow::before {
+      content: attr(data-year);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      padding-top: 1px;
+    }
+    .tyear { display: none; }
+    .tusers, .tmrr, .tarr {
+      display: flex;
+      flex-direction: column;
+      font-size: 11px;
+      min-width: unset;
+    }
+    .tusers::before { content: 'Usuarios'; font-size: 9px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 1px; }
+    .tmrr::before   { content: 'MRR'; font-size: 9px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 1px; }
+    .tarr::before   { content: 'ARR'; font-size: 9px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 1px; }
+    .thito { display: none; }
+
     .chart-wrap { height: 160px; }
-    .countdown-grid { grid-template-columns: 1fr; }
-    .cd-num { font-size: 22px; }
+
+    /* Countdown stacked, centered */
+    .countdown-grid { max-width: 100%; }
+    .cd-num { font-size: 24px; }
+
+    #section-cuentas.active { min-height: unset; padding-top: 1rem; }
   }
+
+  /* ── FLUID TYPOGRAPHY ── */
+  :root {
+    --step--1: clamp(0.69rem, 0.65rem + 0.2vw, 0.8rem);
+    --step-0:  clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+    --step-1:  clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+    --step-2:  clamp(1.2rem, 1.05rem + 0.75vw, 1.563rem);
+    --step-3:  clamp(1.44rem, 1.22rem + 1.1vw, 1.953rem);
+  }
+
+  html { font-size: 100%; }
+
+  body        { font-size: var(--step-0); }
+  h1          { font-size: var(--step-2); }
+  h2          { font-size: var(--step-1); }
+
+  .nav-item   { font-size: var(--step--1); }
+  .tab        { font-size: var(--step--1); }
+
+  .app-name   { font-size: var(--step-0); }
+  .app-desc,
+  .app-why    { font-size: var(--step--1); }
+  .stat-pill  { font-size: var(--step--1); }
+  .lesson-text { font-size: var(--step--1); }
+  .lesson-label { font-size: var(--step--1); }
+
+  .mcard-label { font-size: var(--step--1); }
+  .mcard-val   { font-size: var(--step-1); }
+  .mcard-sub   { font-size: var(--step--1); }
+
+  .tyear  { font-size: var(--step--1); }
+  .tusers { font-size: var(--step--1); }
+  .tmrr   { font-size: var(--step--1); }
+  .tarr   { font-size: var(--step--1); }
+  .thito  { font-size: var(--step--1); }
+  .th     { font-size: var(--step--1); }
+
+  .cd-title  { font-size: var(--step--1); }
+  .cd-date   { font-size: var(--step--1); }
+  .cd-num    { font-size: clamp(1.4rem, 1rem + 2vw, 2.2rem); }
+  .cd-label  { font-size: var(--step--1); }
+
+  .login-card h2 { font-size: var(--step-1); }
+  .login-card p  { font-size: var(--step--1); }
+  .login-input   { font-size: var(--step-0); }
+  .login-btn     { font-size: var(--step--1); }
+  .login-error   { font-size: var(--step--1); }
+
+  .scenario-label { font-size: var(--step--1); }
+
+
+  /* ── NO HORIZONTAL SCROLL ── */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+  * { min-width: 0; }
+  .main { min-width: 0; }
+  .tabs { flex-wrap: wrap; }
+  .timeline { overflow-x: hidden; }
+  .thead, .trow { min-width: 0; }
+  .tusers, .tmrr, .tarr, .thito, .tyear { min-width: 0 !important; flex-shrink: 1; }
+  .app-desc, .app-why, .lesson-text { word-break: break-word; }
+  .cd-units { gap: 4px; }
+  .cd-num { font-size: clamp(1rem, 1rem + 2vw, 2.2rem); }
+
 </style>
 </head>
 <body>
- 
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- HAMBURGER (mobile only) -->
+<button class="mobile-menu-btn" id="mobileMenuBtn" onclick="openSidebar()">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+    <line x1="2" y1="4" x2="14" y2="4"/>
+    <line x1="2" y1="8" x2="14" y2="8"/>
+    <line x1="2" y1="12" x2="14" y2="12"/>
+  </svg>
+</button>
+
 <!-- LOGIN -->
 <div id="login-overlay">
   <div class="login-card">
@@ -424,7 +547,7 @@
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
- 
+
 <!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-header">
@@ -460,10 +583,10 @@
     </button>
   </div>
 </nav>
- 
+
 <!-- MAIN -->
 <main class="main" id="main">
- 
+
   <!-- ESCENARIOS -->
   <div class="section active" id="section-escenarios">
     <h1>4 escenarios con apps reales</h1>
@@ -475,12 +598,12 @@
     </div>
     <div id="content"></div>
   </div>
- 
+
   <!-- CUENTAS ATRÁS -->
   <div class="section" id="section-cuentas">
     <h1>Cuentas atrás</h1>
     <div class="countdown-grid">
- 
+
       <div class="cd-card cd-since">
         <div class="cd-title">O</div>
         <div class="cd-date">27 de febrero de 2027</div>
@@ -491,7 +614,7 @@
           <div class="cd-unit"><span class="cd-num" id="s-secs">--</span><span class="cd-label">seg</span></div>
         </div>
       </div>
- 
+
       <div class="cd-card cd-until">
         <div class="cd-title">A</div>
         <div class="cd-date">18 de mayo de 2027</div>
@@ -502,12 +625,12 @@
           <div class="cd-unit"><span class="cd-num" id="u-secs">--</span><span class="cd-label">seg</span></div>
         </div>
       </div>
- 
+
     </div>
   </div>
- 
+
 </main>
- 
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 // ── SIDEBAR ──
@@ -517,20 +640,21 @@ function toggleSidebar() {
   sb.classList.toggle('collapsed');
   main.classList.toggle('expanded');
 }
- 
+
 // ── SECTIONS ──
 function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('section-' + id).classList.add('active');
   document.getElementById('nav-' + id).classList.add('active');
+  if (window.innerWidth < 768) closeSidebar();
 }
- 
+
 // ── SCENARIOS ──
 const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
 const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
 const tickColor = '#888780';
- 
+
 const scenarios = [
   {
     tabClass: 'active-gray', color: '#888780', colorLight: 'rgba(136,135,128,0.08)',
@@ -621,10 +745,10 @@ const scenarios = [
     milestones:['','Tracción semana 1','Viral sin ads','20 países','€10M ARR','Equipo 30+','Referencia sector','Adquisición posible','€100M ARR','Unicornio','Categoría propia']
   }
 ];
- 
+
 let current = 1;
 let chart = null;
- 
+
 function fmt(n) {
   if (n >= 1000000) return (n/1000000).toFixed(1)+'M';
   if (n >= 1000) return Math.round(n/1000)+'k';
@@ -635,7 +759,7 @@ function fmtEur(n) {
   if (n >= 1000) return '€'+Math.round(n/1000)+'k';
   return '€'+n;
 }
- 
+
 function set(idx) {
   current = idx;
   const s = scenarios[idx];
@@ -644,13 +768,13 @@ function set(idx) {
   });
   render();
 }
- 
+
 function render() {
   const s = scenarios[current];
   const u10 = s.users[10], mrr10 = Math.round(u10*9.99), arr10 = mrr10*12;
   const u5  = s.users[5],  mrr5  = Math.round(u5*9.99);
   const labels = ['Año 0','Año 1','Año 2','Año 3','Año 4','Año 5','Año 6','Año 7','Año 8','Año 9','Año 10'];
- 
+
   const appsHtml = s.apps.map(a => `
     <div class="app-row">
       <div class="app-logo" style="background:${a.bg};color:${a.textColor}">${a.initials}</div>
@@ -661,7 +785,7 @@ function render() {
         <div class="app-stats">${a.stats.map(st=>`<span class="stat-pill">${st}</span>`).join('')}</div>
       </div>
     </div>`).join('');
- 
+
   let timelineHtml = `
     <div class="thead">
       <span class="th" style="min-width:40px">Año</span>
@@ -674,7 +798,7 @@ function render() {
     const u = s.users[i], mrr = Math.round(u*9.99), arr = mrr*12;
     const isKey = [2,5,10].includes(i);
     timelineHtml += `
-      <div class="trow${isKey?' key':''}">
+      <div class="trow${isKey?' key':''}" data-year="Año ${i}">
         <span class="tyear">Año ${i}</span>
         <span class="tusers">${fmt(u)}</span>
         <span class="tmrr">${fmtEur(mrr)}/mes</span>
@@ -682,7 +806,7 @@ function render() {
         <span class="thito">${s.milestones[i]}</span>
       </div>`;
   }
- 
+
   document.getElementById('content').innerHTML = `
     <div class="top-card">
       <span class="scenario-label" style="background:${s.tagBg};color:${s.tagColor}">${s.label}</span>
@@ -702,7 +826,7 @@ function render() {
       <canvas id="mainChart" role="img" aria-label="Proyección usuarios 10 años · ${s.label}"></canvas>
     </div>
     <div class="timeline">${timelineHtml}</div>`;
- 
+
   if (chart) chart.destroy();
   chart = new Chart(document.getElementById('mainChart'), {
     type: 'line',
@@ -725,17 +849,17 @@ function render() {
     }
   });
 }
- 
+
 set(1);
- 
+
 // ── COUNTDOWNS ──
 function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
- 
+
 function updateCountdowns() {
   const now   = new Date();
   const since = new Date('2027-02-27T00:00:00');
   const until = new Date('2027-05-18T00:00:00');
- 
+
   // Since
   let diffS = Math.max(0, since - now) / 1000;
   const sDays  = Math.floor(diffS / 86400); diffS -= sDays * 86400;
@@ -746,7 +870,7 @@ function updateCountdowns() {
   document.getElementById('s-hours').textContent = pad(sHours);
   document.getElementById('s-mins').textContent  = pad(sMins);
   document.getElementById('s-secs').textContent  = pad(sSecs);
- 
+
   // Until
   let diffU = Math.max(0, until - now) / 1000;
   const uDays  = Math.floor(diffU / 86400); diffU -= uDays * 86400;
@@ -758,10 +882,10 @@ function updateCountdowns() {
   document.getElementById('u-mins').textContent  = pad(uMins);
   document.getElementById('u-secs').textContent  = pad(uSecs);
 }
- 
+
 updateCountdowns();
 setInterval(updateCountdowns, 1000);
- 
+
 // ── LOGIN ──
 const PASSWORD = 'success';
 function checkPwd() {
@@ -779,6 +903,33 @@ function checkPwd() {
 if (sessionStorage.getItem('auth') === '1') {
   document.getElementById('login-overlay').classList.add('hidden');
 }
+
+// ── MOBILE SIDEBAR ──
+function isMobile() { return window.innerWidth < 768; }
+
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('mobile-open');
+  document.getElementById('sidebar-overlay').classList.add('visible');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebar-overlay').classList.remove('visible');
+}
+
+// Show/hide hamburger based on screen size
+function handleResize() {
+  const sidebar = document.getElementById('sidebar');
+  if (!isMobile()) {
+    // Desktop: always show sidebar, reset mobile classes
+    sidebar.classList.remove('mobile-open');
+    document.getElementById('sidebar-overlay').classList.remove('visible');
+    // restore desktop margin
+    document.getElementById('main').style.marginLeft = '';
+  }
+}
+window.addEventListener('resize', handleResize);
+handleResize();
+
 </script>
 </body>
 </html>
