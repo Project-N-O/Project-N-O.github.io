@@ -1,15 +1,3 @@
-// api/check-reminders.js
-//
-// Función serverless para Vercel (plan Hobby gratuito, SIN tarjeta de crédito).
-// GitHub Actions llama a esta URL cada minuto. Esta función:
-//   1. Mira qué hora es ahora (zona horaria configurable abajo).
-//   2. Busca en Firestore las tareas que empiezan justo ahora y tienen notify=true.
-//   3. Manda un push real vía FCM a todos los tokens guardados en "fcmTokens".
-//
-// No usa Firebase Cloud Functions en ningún momento — solo usa el paquete
-// "firebase-admin" como librería normal de Node, hablando directamente con
-// Firestore y FCM por API. Eso es gratuito sin necesidad del plan Blaze.
-
 const { initializeApp, getApps, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
@@ -18,11 +6,7 @@ const TIMEZONE = "Atlantic/Canary";
 
 function getAdminApp() {
   if (getApps().length) return getApps()[0];
-
-  // Las credenciales vienen de variables de entorno configuradas en Vercel
-  // (Project Settings → Environment Variables). Ver GUIA_VERCEL.md.
   const privateKey = (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n");
-
   return initializeApp({
     credential: cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
@@ -33,11 +17,9 @@ function getAdminApp() {
 }
 
 module.exports = async function handler(req, res) {
-  // Protección: solo responde si la clave secreta coincide.
   const providedSecret = req.query.secret || req.headers["x-secret"];
   if (providedSecret !== process.env.REMINDER_SECRET) {
-    res.status(403).send("Forbidden");
-    return;
+    return res.status(403).send("Forbidden");
   }
 
   try {
@@ -47,64 +29,57 @@ module.exports = async function handler(req, res) {
 
     const now = new Date();
 
-    const localTime = new Intl.DateTimeFormat("en-GB", {
-      timeZone: TIMEZONE,
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    }).format(now); // ej. "09:00"
+    // Formateadores manuales más seguros que evitan fallos de entorno en Node
+    const localTime = now.toLocaleTimeString("es-ES", { timeZone: TIMEZONE, hour: "2-digit", minute: "2-digit", hour12: false });
+    const localDate = now.toLocaleDateString("sv-SE", { timeZone: TIMEZONE }); // sv-SE siempre devuelve YYYY-MM-DD
 
-    const localDate = new Intl.DateTimeFormat("en-CA", {
-      timeZone: TIMEZONE,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).format(now); // ej. "2026-06-24"
-
+    // CAMBIO: Buscamos tareas de HOY, que ya debieron empezar (<= localTime) y NO notificadas
     const snapshot = await db
       .collection("tasks")
       .where("date", "==", localDate)
-      .where("start", "==", localTime)
+      .where("start", "<=", localTime) 
       .where("notify", "==", true)
       .get();
 
-    if (snapshot.empty) {
-      res.status(200).send(`OK — sin tareas a las ${localTime} del ${localDate}`);
-      return;
+    // Filtrar manualmente en memoria las que ya tienen notifiedAt (Firestore no permite múltiples desigualdades fácilmente)
+    const tareasPendientes = snapshot.docs.filter(doc => !doc.data().notifiedAt);
+
+    if (tareasPendientes.length === 0) {
+      return res.status(200).send(`OK — Sin tareas pendientes de notificar para las ${localTime}`);
     }
 
+    // Traer tokens
     const tokensSnap = await db.collection("fcmTokens").get();
     const tokens = tokensSnap.docs.map((d) => d.id).filter(Boolean);
 
     if (tokens.length === 0) {
-      res.status(200).send("OK — hay tareas pero no hay tokens FCM registrados");
-      return;
+      return res.status(200).send("OK — Hay tareas pero no hay tokens registrados");
     }
 
     let notified = 0;
 
-    for (const docSnap of snapshot.docs) {
+    for (const docSnap of tareasPendientes) {
       const task = docSnap.data();
-      if (task.notifiedAt) continue; // ya se notificó, evita duplicados
 
+      // NOTA: Idealmente aquí deberías filtrar los `tokens` para enviar SOLO al dueño de la tarea.
+      // Si mandas multicast a todos, este objeto message es correcto:
       const message = {
         notification: {
-          title: task.title || "Tienes una tarea ahora",
-          body: task.end
-            ? `De ${task.start} a ${task.end}${task.description ? " — " + task.description : ""}`
-            : (task.description || "Es la hora de empezar.")
+          title: task.title || "Recordatorio de tarea",
+          body: task.description || `Hora de inicio: ${task.start}`
         },
         data: {
           taskId: docSnap.id,
           date: task.date || ""
         },
-        tokens
+        tokens: tokens 
       };
 
       try {
         const response = await messaging.sendEachForMulticast(message);
         notified++;
 
+        // Limpieza de tokens inválidos
         response.responses.forEach((r, i) => {
           if (!r.success) {
             const code = r.error?.code || "";
@@ -117,13 +92,14 @@ module.exports = async function handler(req, res) {
           }
         });
 
+        // Marcar inmediatamente como notificado para que el próximo Cron no la duplique
         await docSnap.ref.update({ notifiedAt: now.toISOString() });
       } catch (err) {
-        console.error("Error enviando notificación:", err);
+        console.error("Error enviando notificación individual:", err);
       }
     }
 
-    res.status(200).send(`OK — ${notified} tarea(s) notificada(s) a las ${localTime}`);
+    res.status(200).send(`OK — ${notified} tarea(s) procesada(s)`);
   } catch (err) {
     console.error(err);
     res.status(500).send("Error: " + (err.message || String(err)));
