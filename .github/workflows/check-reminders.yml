@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Llamar a la función de Vercel
         run: |
-          curl -fsS "https://TU-PROYECTO.vercel.app/api/check-reminders?secret=${{ secrets.REMINDER_SECRET }}"
+          curl -fsS "https://project-n-o-github-io.vercel.app/api/check-reminders?secret=${{ secrets.REMINDER_SECRET }}"
