@@ -997,7 +997,7 @@
 
       <div class="cd-card cd-until">
         <div class="cd-title">"A"</div>
-        <div class="cd-date">18 de mayo de 2027</div>
+        <div class="cd-date">9 de mayo de 2027</div>
         <div class="cd-units">
           <div class="cd-unit"><span class="cd-num" id="u-days">--</span><span class="cd-label">días</span></div>
           <div class="cd-unit"><span class="cd-num" id="u-hours">--</span><span class="cd-label">horas</span></div>
@@ -1145,15 +1145,10 @@ const firebaseConfig = {
   appId: "1:588123283452:web:5368f0beb255a1864f1c79"
 };
 
-// ⚠️ Sustituye este valor por tu VAPID key real.
-// Firebase Console → Configuración del proyecto → Cloud Messaging →
-// "Certificados push web" → genera/copia el par de claves y pega aquí la clave pública.
 const FCM_VAPID_KEY = "BKHhDZv3-LJ98DrxVNA1VV8ny7LsLwadyYGqKIm2wtXo0tvUrB-dnFjLfhU1PxIOfE8NAiKpzCFqoF0vJU7YZxs";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-// experimentalAutoDetectLongPolling evita el error "Could not reach Cloud Firestore
-// backend" cuando un ad-blocker, extensión de privacidad o proxy bloquea el streaming.
 const db = initializeFirestore(app, {
   experimentalAutoDetectLongPolling: true,
   useFetchStreams: false
@@ -1174,7 +1169,6 @@ window.serverTimestamp = serverTimestamp;
 let unsubscribeRoutemap = null;
 let unsubscribeTasks = null;
 
-// ── FCM: registro de Service Worker y token ──
 window.fcmRegisterAndGetToken = async function(currentUserUid) {
   const supported = await fcmIsSupported().catch(() => false);
   if (!supported) {
@@ -1189,7 +1183,6 @@ window.fcmRegisterAndGetToken = async function(currentUserUid) {
     });
     if (!token) return { ok: false, reason: 'sin-token' };
 
-    // Guardamos el token en Firestore para que la Cloud Function pueda enviar el push.
     await setDoc(doc(db, 'fcmTokens', token), {
       token,
       uid: currentUserUid || null,
@@ -1198,7 +1191,6 @@ window.fcmRegisterAndGetToken = async function(currentUserUid) {
     });
 
     onMessage(messaging, (payload) => {
-      // Notificación recibida con la pestaña abierta en primer plano.
       const title = payload.notification?.title || 'Project NOS';
       const body = payload.notification?.body || '';
       if (Notification.permission === 'granted') {
@@ -1213,11 +1205,6 @@ window.fcmRegisterAndGetToken = async function(currentUserUid) {
   }
 };
 
-// Flujo:
-// - Sin sesión de Firebase -> mostrar pantalla de correo/contraseña.
-// - Con sesión de Firebase (incluida la persistida entre visitas) -> ocultar esa
-//   pantalla para siempre (hasta que cierren sesión) y mostrar SIEMPRE el paso "success".
-//   Además, empezar a escuchar en tiempo real los datos del Routemap y de las Tareas.
 onAuthStateChanged(auth, (user) => {
   const fbOverlay = document.getElementById('firebase-login-overlay');
   const successOverlay = document.getElementById('login-overlay');
@@ -1272,7 +1259,6 @@ onAuthStateChanged(auth, (user) => {
 
 function isMobile() { return window.innerWidth < 768; }
 
-// En desktop: colapsa/expande. En mobile: cierra el sidebar 
 function toggleSidebar() {
   if (isMobile()) {
     closeSidebar();
@@ -1286,7 +1272,6 @@ function toggleSidebar() {
 
 function openSidebar() {
   const sidebar = document.getElementById('sidebar');
-  // Eliminar .collapsed por si se arrastró desde desktop — es lo que causaba el bloqueo
   sidebar.classList.remove('collapsed');
   sidebar.classList.add('mobile-open');
   document.getElementById('sidebar-overlay').classList.add('visible');
@@ -1518,7 +1503,7 @@ function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
 function updateCountdowns() {
   const now   = new Date();
   const since = new Date('2027-02-27T00:00:00');
-  const until = new Date('2027-05-18T00:00:00');
+  const until = new Date('2027-05-09T00:00:00');
 
   let diffS = Math.max(0, since - now) / 1000;
   const sDays  = Math.floor(diffS / 86400); diffS -= sDays * 86400;
@@ -1558,7 +1543,6 @@ function checkFirebaseLogin() {
 
   window.signInWithEmailAndPassword(window.auth, email, password)
     .catch(() => {
-      // Mensaje genérico a propósito: no decimos si falló el correo o la contraseña.
       errorEl.textContent = 'Correo o contraseña incorrectos';
       document.getElementById('fb-pwd').value = '';
     });
@@ -1668,7 +1652,6 @@ fetch('eng.json')
   })
   .catch(error => {
     console.error('Error cargando el JSON:', error);
-
     document.getElementById('ingles-list').innerHTML =
       '<p class="routemap-empty">Error cargando las clases de inglés.</p>';
   });
@@ -1699,12 +1682,12 @@ const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto'
 const DIAS_SEMANA = ['L','M','X','J','V','S','D'];
 
 let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth(); // 0-indexed
+let calMonth = new Date().getMonth();
 if (calYear < CAL_MIN_YEAR) { calYear = CAL_MIN_YEAR; calMonth = 0; }
 if (calYear > CAL_MAX_YEAR) { calYear = CAL_MAX_YEAR; calMonth = 11; }
 
-let calSelectedDate = null; // 'YYYY-MM-DD'
-let allTasks = []; // viene de Firestore en tiempo real
+let calSelectedDate = null;
+let allTasks = [];
 let currentFcmToken = null;
 
 function todayISO() {
@@ -1716,7 +1699,6 @@ function dateToISO(year, month, day) {
   return `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 }
 
-// Lunes = 0 ... Domingo = 6
 function mondayIndex(jsDay) {
   return (jsDay + 6) % 7;
 }
@@ -1777,7 +1759,6 @@ function calRenderMonth() {
   const monthLabel = document.getElementById('cal-month-label');
   monthLabel.textContent = `${MESES[calMonth]} ${calYear}`;
 
-  document.querySelector('.cal-nav-btn[onclick="calChangeMonth(-1)"]')?.toggleAttribute;
   const prevBtn = document.querySelectorAll('.cal-nav-btn')[0];
   const nextBtn = document.querySelectorAll('.cal-nav-btn')[1];
   prevBtn.disabled = (calYear === CAL_MIN_YEAR && calMonth === 0);
@@ -1870,7 +1851,6 @@ function renderTaskList() {
 
 function onTasksUpdate(items) {
   allTasks = items;
-  // Si estamos viendo el mes, refrescamos los puntitos; si estamos en un día, refrescamos la lista.
   if (document.getElementById('cal-view-day').style.display !== 'none') {
     renderTaskList();
   } else if (document.getElementById('section-calendario').classList.contains('active')) {
@@ -2009,7 +1989,6 @@ async function enableNotifications() {
 }
 window.enableNotifications = enableNotifications;
 
-// Si ya hay permiso concedido de antes, intenta registrar el token sin pedir nada al usuario.
 window.onLoginSuccess = async function() {
   if ('Notification' in window && Notification.permission === 'granted') {
     const uid = window.auth?.currentUser?.uid || null;
@@ -2033,12 +2012,10 @@ window.onLoginSuccess = async function() {
 function handleResize() {
   const sidebar = document.getElementById('sidebar');
   if (!isMobile()) {
-    // Al volver a desktop: limpiar estado mobile
     sidebar.classList.remove('mobile-open');
     document.getElementById('sidebar-overlay').classList.remove('visible');
     document.getElementById('main').style.marginLeft = '';
   } else {
-    // Al entrar en mobile: limpiar .collapsed para que el hamburger funcione
     sidebar.classList.remove('collapsed');
     document.getElementById('main').classList.remove('expanded');
   }
