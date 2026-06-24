@@ -1145,8 +1145,10 @@ const firebaseConfig = {
   appId: "1:588123283452:web:5368f0beb255a1864f1c79"
 };
 
-
-const FCM_VAPID_KEY = "BKHhDZv3-LJ98DrxVNA1VV8ny7LsLwadyYGqKIm2wtXo0tvUrB-dnFjLfhU1PxIOfE8NAiKpzCFqoF0vJU7YZxs";
+// ⚠️ Sustituye este valor por tu VAPID key real.
+// Firebase Console → Configuración del proyecto → Cloud Messaging →
+// "Certificados push web" → genera/copia el par de claves y pega aquí la clave pública.
+const FCM_VAPID_KEY = "PON_AQUI_TU_VAPID_KEY";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -1947,6 +1949,8 @@ window.calOpenDay = calOpenDay;
 window.calBackToMonth = calBackToMonth;
 
 // ── NOTIFICACIONES (FCM) ──
+let lastNotifError = null;
+
 function updateNotifBanner() {
   const banner = document.getElementById('notif-banner');
   if (!('Notification' in window)) {
@@ -1969,16 +1973,23 @@ function updateNotifBanner() {
     banner.innerHTML = 'Notificaciones bloqueadas. Actívalas en los ajustes del navegador para recibir avisos de tus tareas.';
     return;
   }
+  if (perm === 'granted' && !currentFcmToken && lastNotifError) {
+    banner.style.display = 'flex';
+    banner.className = 'notif-banner error';
+    banner.innerHTML = `No se pudo registrar el dispositivo: ${escapeHtml(lastNotifError)} <button class="notif-banner-btn" onclick="enableNotifications()">Reintentar</button>`;
+    return;
+  }
   banner.style.display = 'flex';
   banner.className = 'notif-banner';
   banner.innerHTML = 'Activa las notificaciones para que te avisemos a la hora de cada tarea. <button class="notif-banner-btn" onclick="enableNotifications()">Activar</button>';
 }
 
 async function enableNotifications() {
-  const banner = document.getElementById('notif-banner');
+  lastNotifError = null;
   try {
     const perm = await Notification.requestPermission();
     if (perm !== 'granted') {
+      lastNotifError = `Permiso del sistema: "${perm}" (no concedido)`;
       updateNotifBanner();
       return;
     }
@@ -1987,9 +1998,11 @@ async function enableNotifications() {
     if (result.ok) {
       currentFcmToken = result.token;
     } else {
+      lastNotifError = result.reason || 'motivo desconocido';
       console.warn('FCM no disponible:', result.reason);
     }
   } catch (err) {
+    lastNotifError = err.message || String(err);
     console.error(err);
   }
   updateNotifBanner();
@@ -2000,8 +2013,16 @@ window.enableNotifications = enableNotifications;
 window.onLoginSuccess = async function() {
   if ('Notification' in window && Notification.permission === 'granted') {
     const uid = window.auth?.currentUser?.uid || null;
-    const result = await window.fcmRegisterAndGetToken(uid);
-    if (result.ok) currentFcmToken = result.token;
+    try {
+      const result = await window.fcmRegisterAndGetToken(uid);
+      if (result.ok) {
+        currentFcmToken = result.token;
+      } else {
+        lastNotifError = result.reason || 'motivo desconocido';
+      }
+    } catch (err) {
+      lastNotifError = err.message || String(err);
+    }
   }
   if (document.getElementById('section-calendario').classList.contains('active')) {
     updateNotifBanner();
