@@ -1,0 +1,15 @@
+name: Revisar recordatorios de tareas
+
+
+on:
+  schedule:
+    - cron: '* * * * *'
+  workflow_dispatch: {}   
+
+jobs:
+  ping-function:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar a la función de Vercel
+        run: |
+          curl -fsS "https://TU-PROYECTO.vercel.app/api/check-reminders?secret=${{ secrets.REMINDER_SECRET }}"
