@@ -1,10 +1,9 @@
 name: Revisar recordatorios de tareas
 
-
 on:
   schedule:
     - cron: '* * * * *'
-  workflow_dispatch: {}   
+  workflow_dispatch: {}
 
 jobs:
   ping-function:
