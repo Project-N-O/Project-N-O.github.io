@@ -406,11 +406,15 @@
   }
   .routemap-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .routemap-date { font-size: 11px; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+  .routemap-card-actions { display: flex; align-items: center; gap: 2px; }
+  .routemap-edit,
   .routemap-delete {
     background: none; border: none; cursor: pointer;
     color: var(--color-text-secondary); font-size: 13px; padding: 2px 6px;
     border-radius: 6px; transition: background .15s, color .15s;
+    display: inline-flex; align-items: center; justify-content: center;
   }
+  .routemap-edit:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
   .routemap-delete:hover { background: var(--color-background-secondary); color: #E05252; }
   .routemap-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px; }
   .routemap-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
@@ -1084,12 +1088,13 @@
   <div class="section" id="section-routemap">
     <h1>Routemap</h1>
     <div class="top-card">
-      <span class="form-label">Publicar nueva idea</span>
+      <span class="form-label" id="route-form-label">Publicar nueva idea</span>
       <input class="field-input" type="date" id="route-date">
       <input class="field-input" type="text" id="route-title" placeholder="Título de la idea">
       <textarea class="field-input" id="route-desc" placeholder="Descripción de la idea" rows="3"></textarea>
       <div class="form-actions">
-        <button class="btn-primary" onclick="publishRoute()">Publicar</button>
+        <button class="btn-primary" id="route-submit-btn" onclick="publishRoute()">Publicar</button>
+        <button class="btn-secondary" id="route-cancel-btn" onclick="cancelEditRoute()" style="display:none;">Cancelar</button>
         <span class="form-error" id="route-error"></span>
       </div>
     </div>
@@ -1581,7 +1586,11 @@ function formatRouteDate(isoDate) {
   return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+let routemapItems = [];
+let editingRouteId = null;
+
 function renderRoutemap(items) {
+  routemapItems = items;
   const container = document.getElementById('routemap-list');
   if (!container) return;
   if (!items.length) {
@@ -1592,13 +1601,49 @@ function renderRoutemap(items) {
     <div class="routemap-card">
       <div class="routemap-card-head">
         <span class="routemap-date">${formatRouteDate(item.date)}</span>
-        <button class="routemap-delete" onclick="deleteRoute('${item.id}')" title="Eliminar">✕</button>
+        <div class="routemap-card-actions">
+          <button class="routemap-edit" onclick="editRoute('${item.id}')" title="Editar">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 2l3 3-7.5 7.5L3 13l.5-3.5L11 2z"/>
+            </svg>
+          </button>
+          <button class="routemap-delete" onclick="deleteRoute('${item.id}')" title="Eliminar">✕</button>
+        </div>
       </div>
       <p class="routemap-title">${escapeHtml(item.title)}</p>
       <p class="routemap-desc">${escapeHtml(item.description)}</p>
     </div>`).join('');
 }
 window.renderRoutemap = renderRoutemap;
+
+function editRoute(id) {
+  const item = routemapItems.find(r => r.id === id);
+  if (!item) return;
+  editingRouteId = id;
+
+  document.getElementById('route-date').value = item.date || '';
+  document.getElementById('route-title').value = item.title || '';
+  document.getElementById('route-desc').value = item.description || '';
+  document.getElementById('route-error').textContent = '';
+  document.getElementById('route-form-label').textContent = 'Editar idea';
+  document.getElementById('route-submit-btn').textContent = 'Guardar cambios';
+  document.getElementById('route-cancel-btn').style.display = '';
+
+  document.querySelector('#section-routemap .top-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.editRoute = editRoute;
+
+function cancelEditRoute() {
+  editingRouteId = null;
+  document.getElementById('route-date').value = '';
+  document.getElementById('route-title').value = '';
+  document.getElementById('route-desc').value = '';
+  document.getElementById('route-error').textContent = '';
+  document.getElementById('route-form-label').textContent = 'Publicar nueva idea';
+  document.getElementById('route-submit-btn').textContent = 'Publicar';
+  document.getElementById('route-cancel-btn').style.display = 'none';
+}
+window.cancelEditRoute = cancelEditRoute;
 
 function publishRoute() {
   const dateEl = document.getElementById('route-date');
@@ -1613,6 +1658,18 @@ function publishRoute() {
 
   if (!date || !title || !description) {
     errorEl.textContent = 'Rellena fecha, título y descripción';
+    return;
+  }
+
+  if (editingRouteId) {
+    window.updateDoc(window.doc(window.db, 'routemap', editingRouteId), {
+      date, title, description
+    }).then(() => {
+      cancelEditRoute();
+    }).catch((err) => {
+      errorEl.textContent = err.code ? `${err.code} — ${err.message}` : 'No se pudo guardar el cambio. Inténtalo de nuevo.';
+      console.error(err);
+    });
     return;
   }
 
@@ -1631,6 +1688,7 @@ function publishRoute() {
 
 function deleteRoute(id) {
   if (!confirm('¿Eliminar esta idea publicada?')) return;
+  if (editingRouteId === id) cancelEditRoute();
   window.deleteDoc(window.doc(window.db, 'routemap', id)).catch((err) => {
     alert(err.code ? `${err.code} — ${err.message}` : 'No se pudo eliminar.');
     console.error(err);
